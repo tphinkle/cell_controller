@@ -19,6 +19,7 @@
 // Project related
 #include <RPThreadController.h>
 
+
 class RPModel : public QObject
 {
 
@@ -37,7 +38,9 @@ public:
     std::vector<double> time_buffer_;
     std::vector<double> data_buffer_;
 
+
 signals:
+    // For communicating with other threads.
     void request_update_plot();
     void request_syringe_switch_direction();
 
@@ -62,8 +65,9 @@ private:
     // Plot
     void check_update_plot();
 
-    // Misc.
-    unsigned int get_time_ms();
+    // Misc
+    unsigned int get_time_ms(); // Gets current system time in ms. Doesn't belong here,
+                                // but works for now.
 
 
     ///////////////////////////////////////////
@@ -74,13 +78,10 @@ private:
 
     // DAQmx things
     TaskHandle daq_task_handle_;
-
-    int32 sampling_frequency_;
-    int32 samples_per_channel_;
-    uInt32 array_size_;
-
-    float64* data_ref_;        // Must be float64
-
+    int32 sampling_frequency_;      // Total sample rate =
+    int32 samples_per_channel_;     //       sampling_frequency_ x samples_per_channel_
+    uInt32 sample_buffer_size_;
+    float64* sample_buffer_;
 
 
     // Parser things

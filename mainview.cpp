@@ -39,13 +39,21 @@ void MainView::setup_main_view()
 void MainView::setup_rp_view()
 {
     // Plot and plot items
-    rp_plot_ = new QwtPlot(QwtText("RP Plot"), this);
+    rp_plot_ = new QwtPlot(QwtText("Resistive pulse data"), this);
     rp_plot_->setGeometry(0, 500, 480, 480);
-    rp_plot_->setAxisAutoScale(0, true);
-    rp_plot_->setAxisAutoScale(1, true);
+
 
     rp_plot_curve_ = new QwtPlotCurve(QwtText("RP Data"));
     rp_plot_curve_->attach(rp_plot_);
+
+    rp_plot_->setAxisTitle(QwtPlot::xBottom, "Sample");
+    rp_plot_->setAxisTitle(QwtPlot::yLeft, "Current (xA)");
+
+
+    rp_plot_->setAxisAutoScale(0, true);
+    rp_plot_->setAxisAutoScale(QwtPlot::yLeft, true);
+
+    rp_plot_->setAxisScale(QwtPlot::yLeft, -0.01, 0.01);
 
     // Buttons
 

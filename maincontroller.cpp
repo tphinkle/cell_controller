@@ -19,7 +19,7 @@ void MainController::setup_connections()
     // Connect data pointers from Model to QwtPlot
     main_view_->rp_plot_curve_->setRawSamples(\
                 &main_model_->rp_model().time_buffer_.front(),\
-                &main_model_->rp_model().data_buffer_.front(),
+                &main_model_->rp_model().data_buffer_.front(),\
                 main_model_->rp_model().data_buffer_.size()\
                 );
     //main_model_->rp_model().buffer_
