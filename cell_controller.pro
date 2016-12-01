@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     syringemodel.cpp \
     rpmodel.cpp \
     rpcontroller.cpp \
-    serialconnection.cpp
+    serialconnection.cpp \
+    rpthreadcontroller.cpp
 
 HEADERS  += \
     syringecontroller.h \
@@ -35,6 +36,7 @@ HEADERS  += \
     rpcontroller.h \
     serialconnection.h \
     "C:\Program Files\National Instruments\NI-DAQ\DAQmx ANSI C Dev\include\NIDAQmx.h" \
+    rpthreadcontroller.h
 
 FORMS    += \
     mainview.ui

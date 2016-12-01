@@ -1,4 +1,5 @@
 #include "rpcontroller.h"
+#include <QThread>
 
 RPController::RPController(MainModel* main_model, MainView* main_view)
 {
@@ -7,14 +8,54 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
 
 }
 
-void RPController::create_DAQ_task()
+
+void RPController::start_main_loop()
 {
-    main_model_->rp_model().create_DAQ_task();
+    QThread* rp_thread = new QThread();
+    RPThreadController* rp_thread_controller = new RPThreadController(\
+                main_view_->rp_control_syringe_checkbox_->isChecked(), \
+                main_view_->rp_control_camera_checkbox_->isChecked());
+
+    main_model_->rp_model().thread_controller_ = rp_thread_controller;
+
+    main_model_->rp_model().moveToThread(rp_thread);
+
+    ///////////////////////////
+    // Control flow connections
+    ///////////////////////////
+
+    // Connect start thread to start main loop
+    connect(rp_thread, SIGNAL(started()), &main_model_->rp_model(), SLOT(start_main_loop()));
+
+
+
+
+    // Connect end main loop to stop thread
+    connect(main_view_->rp_stop_button_, SIGNAL(clicked()), rp_thread_controller, SLOT(stop_run()));
+    connect(main_view_->rp_stop_button_, SIGNAL(clicked()), rp_thread, SLOT(quit()));
+
+    // Connect stop thread to delete thread
+    connect(rp_thread, SIGNAL(finished()), rp_thread, SLOT(deleteLater()));
+
+    ///////////////////////////
+    // Interactive connections
+    ///////////////////////////
+
+    connect(main_view_->rp_control_syringe_checkbox_, SIGNAL(clicked(bool)),\
+            rp_thread_controller, SLOT(set_control_syringe(bool)));
+
+    // Connect update plot signal to update plot
+    connect(&main_model_->rp_model(), SIGNAL(request_update_plot()), this, SLOT(receive_request_update_plot()));
+
+
+    rp_thread->start();
+
+
     return;
 }
 
-void RPController::start_DAQ_task()
+void RPController::receive_request_update_plot()
 {
-    main_model_->rp_model().start_DAQ_task();
+
     return;
 }

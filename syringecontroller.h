@@ -1,10 +1,13 @@
 #ifndef SYRINGECONTROLLER_H
 #define SYRINGECONTROLLER_H
 
+// Windows
 #include <windows.h>
 
+// Program specific
 #include <mainmodel.h>
 #include <mainview.h>
+
 
 
 
@@ -30,6 +33,7 @@ private:
     // Handles
     MainModel* main_model_;
     MainView* main_view_;
+
 
 
 

@@ -1,18 +1,30 @@
 #include "maincontroller.h"
+#include "syringecontroller.h"
 
 MainController::MainController(MainModel* main_model, MainView* main_view) :
     syringe_controller_(main_model, main_view),
     rp_controller_(main_model, main_view)
 {
+
     main_model_ = main_model;
     main_view_ = main_view;
 
     setup_connections();
+
 }
 
 void MainController::setup_connections()
 {
-    // Syringe connections
+
+    // Connect data pointers from Model to QwtPlot
+    main_view_->rp_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().time_buffer_.front(),\
+                &main_model_->rp_model().data_buffer_.front(),
+                main_model_->rp_model().data_buffer_.size()\
+                );
+    //main_model_->rp_model().buffer_
+
+    // MainView -> SyringeController
     QObject::connect(main_view_->syringe_remote_button_, &QPushButton::clicked,\
                      &syringe_controller_, &SyringeController::set_remote);
 
@@ -31,12 +43,17 @@ void MainController::setup_connections()
     QObject::connect(main_view_->syringe_set_rate_button_, &QPushButton::clicked,\
                      &syringe_controller_, &SyringeController::set_rate);
 
-    // RP Connections
-    QObject::connect(main_view_->rp_create_task_button_, &QPushButton::clicked,\
-                     &rp_controller_, &RPController::create_DAQ_task);
+    // MainView -> RPController
+    QObject::connect(main_view_->rp_start_button_, &QPushButton::clicked,\
+                     &rp_controller_, &RPController::start_main_loop);
 
-    QObject::connect(main_view_->rp_start_task_button_, &QPushButton::clicked,\
-                     &rp_controller_, &RPController::start_DAQ_task);
+    // RPModel to SyringeController connections
+    QObject::connect(&main_model_->rp_model(), SIGNAL(request_syringe_switch_direction()),\
+                     &syringe_controller_, SLOT(switch_direction()));
+
+    // RPModel to MainView
+    QObject::connect(&main_model_->rp_model(), SIGNAL(request_update_plot()),\
+                     main_view_->rp_plot_, SLOT(replot()));
 
 
     return;

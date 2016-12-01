@@ -12,8 +12,8 @@ public:
     RPController(MainModel* main_model, MainView* main_view);
 
 public slots:
-    void create_DAQ_task();
-    void start_DAQ_task();
+    void start_main_loop();
+    void receive_request_update_plot();
 
 private:
     MainModel*  main_model_;

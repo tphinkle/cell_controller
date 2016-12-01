@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QCheckBox>
 
 // Qwt
 #include <qwt_plot.h>
@@ -27,7 +28,9 @@ public:
 
     // UI Elements
 
+    ///////////////////////////////////////////
     // Syringe
+    ///////////////////////////////////////////
 
     // Buttons
     QPushButton* syringe_local_button_;
@@ -42,7 +45,12 @@ public:
     QLabel* syringe_rate_label_;
     QLineEdit* syringe_rate_field_;
 
+
+    ///////////////////////////////////////////
     // RP
+    ///////////////////////////////////////////
+
+
 
     // Plot and plot items
     QwtPlot* rp_plot_;
@@ -50,8 +58,12 @@ public:
 
 
     // Buttons
-    QPushButton* rp_create_task_button_;
-    QPushButton* rp_start_task_button_;
+    QPushButton* rp_start_button_;
+    QPushButton* rp_stop_button_;
+
+    // Check boxes
+    QCheckBox* rp_control_syringe_checkbox_;
+    QCheckBox* rp_control_camera_checkbox_;
 
 private:
     Ui::MainView *ui;

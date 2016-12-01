@@ -41,21 +41,26 @@ void MainView::setup_rp_view()
     // Plot and plot items
     rp_plot_ = new QwtPlot(QwtText("RP Plot"), this);
     rp_plot_->setGeometry(0, 500, 480, 480);
+    rp_plot_->setAxisAutoScale(0, true);
+    rp_plot_->setAxisAutoScale(1, true);
 
     rp_plot_curve_ = new QwtPlotCurve(QwtText("RP Data"));
     rp_plot_curve_->attach(rp_plot_);
 
     // Buttons
-    rp_create_task_button_ = new QPushButton("Create RP\n task", this);
-    rp_create_task_button_->setGeometry(0, 100, 50, 25);
 
-    rp_start_task_button_ = new QPushButton("Start RP\n task", this);
-    rp_start_task_button_->setGeometry(50, 100, 50, 25);
+    rp_start_button_ = new QPushButton("Start RP", this);
+    rp_start_button_->setGeometry(0, 100, 50, 25);
 
+    rp_stop_button_ = new QPushButton("Stop RP", this);
+    rp_stop_button_->setGeometry(50, 100, 50, 25);
 
+    // Checkboxes
+    rp_control_syringe_checkbox_ = new QCheckBox("Syringe", this);
+    rp_control_syringe_checkbox_->setGeometry(100, 100, 50, 25);
 
-
-
+    rp_control_camera_checkbox_ = new QCheckBox("Camera", this);
+    rp_control_camera_checkbox_->setGeometry(150, 100, 50, 25);
 
     return;
 }
