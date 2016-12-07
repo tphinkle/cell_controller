@@ -8,7 +8,6 @@
 TCPLayer::TCPLayer()
 {
     initialized_ = false;
-    initialize();
 }
 
 TCPLayer::~TCPLayer()
@@ -22,12 +21,17 @@ TCPLayer::~TCPLayer()
 /// Initialization
 ///////////////////////////////////////////////
 
-void TCPLayer::initialize()
+void TCPLayer::initialize(int command_port, int data_port, std::string camera_ip, std::string server_ip)
 {
+    command_port_ = command_port;
+    data_port_ = data_port;
+    camera_ip_ = camera_ip;
+    server_ip_ = server_ip;
+
     bool success;
 
     std::cout << "Initializing the TCP layer." << std::endl;
-    if(!start_winsocket())
+    if(!start_winsock())
     {
         std::cout << "Failed to initialize TCP layer." << std::endl;
         initialized_ = false;
@@ -74,6 +78,26 @@ bool TCPLayer::open_command_socket()
 {
     std::cout << "\tTrying to open command socket." << std::endl;
 
+    command_socket_ = INVALID_SOCKET;
+    command_socket_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    if(command_socket_ == INVALID_SOCKET)
+    {
+        std::cout << "\t\tFailed to open command socket: " << WSAGetLastError() << std::endl;
+        return false;
+    }
+
+    SOCKADDR_IN target;
+    target.sin_family = AF_INET;
+    target.sin_port = htons(command_port_);
+    target.sin_addr.s_addr = inet_addr(camera_ip_.c_str());
+
+    int error = ::connect(command_socket_, (SOCKADDR*) &target, sizeof(target));
+    if(error == SOCKET_ERROR)
+    {
+        std::cout << "\t\tFailed to connect command socket: " << WSAGetLastError() << std::endl;
+    }
+
     std::cout << "\t\tCommand socket opened." << std::endl;
 
     return true;
@@ -81,9 +105,55 @@ bool TCPLayer::open_command_socket()
 
 bool TCPLayer::open_listen_socket()
 {
+    // Tutorial on creating a socket for the server
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/bb530742(v=vs.85.aspx)
+
     std::cout << "\tTrying to open listen socket." << std::endl;
 
-    std::cout << "\t\tListen socket opened." << std::endl;
+    struct addrinfo* result = NULL, *pytr = NULL, hints;
+
+    ZeroMemory(&hints, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    hints.ai_flags = AI_PASSIVE;
+
+    int error = getaddrinfo(NULL, std::to_string(data_port_).c_str(), &hints, &result);
+
+    if(error != 0)
+    {
+        std::cout << "\t\tFailed to get address info: " << error << std::endl;
+        return false;
+    }
+
+    listen_socket_ = INVALID_SOCKET;
+
+    listen_socket_ = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+
+    if(listen_socket_ == INVALID_SOCKET)
+    {
+        std::cout << "\t\tError opening socket: " << WSAGetLastError() << std::endl;
+        freeaddrinfo(result);
+        return false;
+    }
+
+    error = bind(listen_socket_, result->ai_addr, (int)result->ai_addrlen);
+    if(error == SOCKET_ERROR)
+    {
+        std::cout << "\t\tFailed to bind socket: " << WSAGetLastError() << std::endl;
+        freeaddrinfo(result);
+        return false;
+    }
+
+    freeaddrinfo(result);
+
+    if(listen(listen_socket_, SOMAXCONN) == SOCKET_ERROR)
+    {
+        std::cout << "\t\tFailed to listen: " << WSAGetLastError() << std::endl;
+        return false;
+    }
+
+    std::cout << "\t\tSuccessfully opened listen socket." << std::endl;
 
     return true;
 }
@@ -97,17 +167,78 @@ bool TCPLayer::open_data_socket()
     return true;
 }
 
+void TCPLayer::set_data_socket_blocking(bool blocking)
+{
+    u_long mode;
+    if(blocking)
+    {
+        mode = 0;
+    }
+    else
+    {
+        mode = 1;
+    }
+
+    ioctlsocket(data_socket_, FIONBIO, &mode);
+
+    return;
+}
+
 ///////////////////////////////////////////////
 /// Commands
 ///////////////////////////////////////////////
 
-void TCPLayer::send_command(std::string command)
+std::string TCPLayer::send_command(std::string command)
 {
-    return;
+    std::cout << "Trying to send command: " << std::endl << "\t" << command << std::endl;
+
+    send(command_socket_, command.c_str(), command.length(), NULL);
+
+    char recv_buffer[10000];
+    recv(command_socket_, recv_buffer, sizeof(recv_buffer), NULL);
+    std::cout << std::string(recv_buffer) << std::endl;
+    return std::string(recv_buffer);
+
 }
 
 void TCPLayer::send_data_request(std::string request, std::vector<char>& data_buffer)
 {
+    send_command(request);
+
+    static bool listen_set = false;
+    if(listen_set == false)
+    {
+        data_socket_ = INVALID_SOCKET;
+        data_socket_ = accepte(listen_socket_, NULL, NULL);
+        listen_set = true;
+    }
+
+    set_data_socket_blocking(true);
+
+    int data_buffer_iter = 0;
+    char temp_buffer[1];
+
+    int bytes_returned;
+
+    set_data_socket_blocking(false);
+
+
+    while(data_buffer_iter < data_buffer.size())
+    {
+        bytes_returned = recv(data_socket_, temp_buffer, sizeof(temp_buffer), 0);
+
+        for(int i = 0; i < bytes_returned; i++)
+        {
+            data_buffer[data_buffer_iter] = temp_buffer[i];
+            data_buffer_iter++;
+        }
+
+
+
+
+    }
+
+    set_data_socket_blocking(true);
 
     return;
 }

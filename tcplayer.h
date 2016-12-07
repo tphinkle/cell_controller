@@ -6,6 +6,7 @@
 
 // Windows
 #include <winsock2.h>
+#include <Ws2tcpip.h>
 
 class TCPLayer
 {
@@ -15,8 +16,12 @@ public:
     ~TCPLayer();
 
     // TCP related
+    int command_port_;
+    int data_port_;
+
     std::string camera_ip_;
     std::string server_ip_;
+
 
     SOCKET command_socket_;
     SOCKET listen_socket_;
@@ -27,14 +32,16 @@ public:
 
 private:
     // Initialization
-    void initialize();
+    void initialize(int command_port, int data_port, std::string camera_ip, std::string server_ip);
     bool start_winsock();
     bool open_command_socket();
     bool open_listen_socket();
     bool open_data_socket();
+    void set_data_socket_blocking(bool blocking);
 
     // Commands
-
+    std::string send_command(std::string command);
+    void send_data_request(std::string command, std::vector<char> buffer);
 
     // Closing
     void close();

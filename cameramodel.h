@@ -21,6 +21,9 @@ public:
 
 private:
     TCPLayer tcplayer_;
+
+    std::vector<char> live_image_;
+    char* live_image_pointer_;
 };
 
 #endif // CAMERAMODEL_H

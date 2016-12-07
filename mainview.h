@@ -7,11 +7,29 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsView>
 
 // Qwt
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_text.h>
+
+
+
+/////////////////////////////////////////////////////
+// NOTES
+/////////////////////////////////////////////////////
+/// Document on fast QImage display:
+/// http://www.qtcentre.org/threads/6929-Any-fast-way(-lt-10ms)-to-display-640*480-QImage-on-QGraphicsScene
+///
+/// Need to change way the UI is updated. Should create QTimer object for each UI element that is updated
+/// and call a function update() when the timer is ready (through signal and slot connections). Then,
+/// the UI needs to have a reference/pointer to the source of the data that it is responsible for displaying.
+/// This reference/pointer should point to data allocated on the heap. Allocation occurs in the relevant ____model.
+/// This significantly reduces the complexity of the UI calls.
+
 
 
 namespace Ui {
@@ -27,6 +45,7 @@ public:
     ~MainView();
 
     // UI Elements
+
 
     ///////////////////////////////////////////
     // Syringe
@@ -64,6 +83,17 @@ public:
     // Check boxes
     QCheckBox* rp_control_syringe_checkbox_;
     QCheckBox* rp_control_camera_checkbox_;
+
+    ///////////////////////////////////////////
+    // Camera
+    ///////////////////////////////////////////
+
+
+
+    // Plot
+    QGraphicsScene* scene_;
+    QGraphicsPixmapItem* pixmapitem_;
+    QGraphicsView* view_;
 
 private:
     Ui::MainView *ui;
