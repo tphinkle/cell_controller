@@ -7,6 +7,7 @@
 #include <mainview.h>
 #include <syringecontroller.h>
 #include <rpcontroller.h>
+#include <cameracontroller.h>
 
 class MainController : public QObject
 {
@@ -21,6 +22,7 @@ public:
 private:
     SyringeController syringe_controller_;
     RPController rp_controller_;
+    CameraController camera_controller_;
 
     // Handles
     MainModel* main_model_;

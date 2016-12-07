@@ -3,6 +3,7 @@
 
 #include <syringemodel.h>
 #include <rpmodel.h>
+#include <cameramodel.h>
 
 class MainModel
 {
@@ -18,6 +19,7 @@ private:
     // Handles
     SyringeModel syringe_model_;
     RPModel rp_model_;
+    CameraModel camera_model_;
 
 
 

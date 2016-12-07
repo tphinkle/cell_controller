@@ -13,7 +13,11 @@ TEMPLATE = app
 
 # Needed according to
 # forums.ni.com/t5/Multifunction-DAQ/Howto-use-NIDAQmx-with-mingw-gcc-3-4-2/m-p/294361?jump=true
-LIBS += "C:\Program Files\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc\NIDAQmx.lib"
+LIBS += "C:\Program Files\National Instruments\NI-DAQ\DAQmx ANSI C Dev\lib\msvc\NIDAQmx.lib" \
+    "C:\Users\Siwy Lab\Desktop\preston\phantom\PhSDK705\PhSDK705\Lib\PhCon.lib" \
+    "C:\Users\Siwy Lab\Desktop\preston\phantom\PhSDK705\PhSDK705\Lib\PhFile.lib" \
+    "C:\Users\Siwy Lab\Desktop\preston\phantom\PhSDK705\PhSDK705\Lib\PhInt.lib"
+
 
 SOURCES += main.cpp\
     syringecontroller.cpp \
@@ -24,7 +28,10 @@ SOURCES += main.cpp\
     rpmodel.cpp \
     rpcontroller.cpp \
     serialconnection.cpp \
-    rpthreadcontroller.cpp
+    rpthreadcontroller.cpp \
+    cameracontroller.cpp \
+    cameramodel.cpp \
+    tcplayer.cpp
 
 HEADERS  += \
     syringecontroller.h \
@@ -36,7 +43,13 @@ HEADERS  += \
     rpcontroller.h \
     serialconnection.h \
     "C:\Program Files\National Instruments\NI-DAQ\DAQmx ANSI C Dev\include\NIDAQmx.h" \
-    rpthreadcontroller.h
+    "C:\Users\Siwy Lab\Desktop\preston\phantom\PhSDK705\PhSDK705\Inc\PhCon.h"\
+    "C:\Users\Siwy Lab\Desktop\preston\phantom\PhSDK705\PhSDK705\Inc\PhFile.h"\
+    "C:\Users\Siwy Lab\Desktop\preston\phantom\PhSDK705\PhSDK705\Inc\PhInt.h"\
+    rpthreadcontroller.h \
+    cameracontroller.h \
+    cameramodel.h \
+    tcplayer.h
 
 FORMS    += \
     mainview.ui
