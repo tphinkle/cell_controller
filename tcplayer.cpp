@@ -209,7 +209,7 @@ void TCPLayer::send_data_request(std::string request, std::vector<char>& data_bu
     if(listen_set == false)
     {
         data_socket_ = INVALID_SOCKET;
-        data_socket_ = accepte(listen_socket_, NULL, NULL);
+        data_socket_ = accept(listen_socket_, NULL, NULL);
         listen_set = true;
     }
 

@@ -13,6 +13,7 @@ public:
     // Get/set
     SyringeModel& syringe_model();
     RPModel& rp_model();
+    CameraModel& camera_model();
 
 private:
 

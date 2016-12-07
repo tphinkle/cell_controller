@@ -6,6 +6,8 @@ class CameraController
 {
 public:
     CameraController();
+
+
 };
 
 #endif // CAMERACONTROLLER_H
