@@ -20,7 +20,7 @@ void MainView::setup()
 {
     setup_main_view();
     setup_rp_view();
-    setup_oi_view();
+    setup_camera_view();
     setup_syringe_view();
 
     return;
@@ -40,7 +40,7 @@ void MainView::setup_rp_view()
 {
     // Plot and plot items
     rp_plot_ = new QwtPlot(QwtText("Resistive pulse data"), this);
-    rp_plot_->setGeometry(0, 500, 480, 480);
+    rp_plot_->setGeometry(0, 500, 640, 480);
 
 
     rp_plot_curve_ = new QwtPlotCurve(QwtText("RP Data"));
@@ -73,8 +73,27 @@ void MainView::setup_rp_view()
     return;
 }
 
-void MainView::setup_oi_view()
+void MainView::setup_camera_view()
 {
+    // Buttons
+    camera_start_button_ = new QPushButton("Start camera", this);
+    camera_start_button_->setGeometry(0, 150, 50, 25);
+
+    camera_stop_button_ = new QPushButton("Stop camera", this);
+    camera_stop_button_->setGeometry(50, 150, 50, 25);
+
+
+    // Image view
+    scene_ = new QGraphicsScene(this);
+    pixmapitem_ = new QGraphicsPixmapItem();
+    scene_->addItem(pixmapitem_);
+
+    view_ = new QGraphicsView(this);
+    view_->setScene(scene_);
+    view_->setGeometry(700, 500, 640, 480);
+    view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     return;
 }
 

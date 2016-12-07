@@ -51,9 +51,12 @@ void MainController::setup_connections()
     QObject::connect(&main_model_->rp_model(), SIGNAL(request_syringe_switch_direction()),\
                      &syringe_controller_, SLOT(switch_direction()));
 
-    // RPModel to MainView
-    QObject::connect(&main_model_->rp_model(), SIGNAL(request_update_plot()),\
-                     main_view_->rp_plot_, SLOT(replot()));
+
+    // Timers
+    QObject::connect(rp_controller_.rp_plot_timer_, SIGNAL(timeout()), main_view_->rp_plot_, SLOT(replot()));
+    QObject::connect(rp_controller_.rp_plot_timer_, SIGNAL(timeout()), rp_controller_.rp_plot_timer_, SLOT(start()));
+    QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()), rp_controller_.rp_plot_timer_, SLOT(start()));
+
 
 
     return;

@@ -57,7 +57,7 @@ void RPModel::start_main_loop()
         sample_DAQ();
         update_buffer();
         parse_buffer();
-        check_update_plot();
+        // check_update_plot();
     }
 
     return;
@@ -139,9 +139,6 @@ void RPModel::parse_buffer()
 
 void RPModel::check_update_plot()
 {
-
-
-
     unsigned int current_time = get_time_ms();
 
     if(current_time - last_plot_update_time_ > frame_period_ms_)

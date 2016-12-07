@@ -6,6 +6,11 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
     main_model_ = main_model;
     main_view_ = main_view;
 
+
+    rp_plot_period_ = (1000./60);
+    rp_plot_timer_ = new QTimer();
+    rp_plot_timer_->setInterval(rp_plot_period_);
+
 }
 
 

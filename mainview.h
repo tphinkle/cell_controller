@@ -88,12 +88,16 @@ public:
     // Camera
     ///////////////////////////////////////////
 
-
+    // Buttons
+    QPushButton* camera_start_button_;
+    QPushButton* camera_stop_button_;
 
     // Plot
     QGraphicsScene* scene_;
     QGraphicsPixmapItem* pixmapitem_;
     QGraphicsView* view_;
+
+
 
 private:
     Ui::MainView *ui;
@@ -106,7 +110,7 @@ private:
     void setup();
     void setup_main_view();
     void setup_rp_view();
-    void setup_oi_view();
+    void setup_camera_view();
     void setup_syringe_view();
 
 };
