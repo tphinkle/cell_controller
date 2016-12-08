@@ -58,9 +58,3 @@ void RPController::start_main_loop()
 
     return;
 }
-
-void RPController::receive_request_update_plot()
-{
-
-    return;
-}

@@ -21,7 +21,6 @@ public:
 
 public slots:
     void start_main_loop();
-    void receive_request_update_plot();
 
 private:
     MainModel*  main_model_;

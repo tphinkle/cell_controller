@@ -41,7 +41,6 @@ public:
 
 signals:
     // For communicating with other threads.
-    void request_update_plot();
     void request_syringe_switch_direction();
 
 public slots:
@@ -61,9 +60,6 @@ private:
 
     // Parser
     void parse_buffer();
-
-    // Plot
-    void check_update_plot();
 
     // Misc
     unsigned int get_time_ms(); // Gets current system time in ms. Doesn't belong here,

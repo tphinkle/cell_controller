@@ -10,6 +10,9 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsView>
+#include <QLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 // Qwt
 #include <qwt_plot.h>
@@ -112,6 +115,7 @@ private:
     void setup_rp_view();
     void setup_camera_view();
     void setup_syringe_view();
+    void setup_layout();
 
 };
 

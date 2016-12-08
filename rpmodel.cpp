@@ -137,20 +137,6 @@ void RPModel::parse_buffer()
     return;
 }
 
-void RPModel::check_update_plot()
-{
-    unsigned int current_time = get_time_ms();
-
-    if(current_time - last_plot_update_time_ > frame_period_ms_)
-    {
-        // Update the plot
-        emit request_update_plot();
-        last_plot_update_time_ = get_time_ms();
-    }
-
-    return;
-
-}
 
 unsigned int RPModel::get_time_ms()
 {
