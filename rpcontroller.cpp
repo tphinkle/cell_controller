@@ -49,8 +49,7 @@ void RPController::start_main_loop()
     connect(main_view_->rp_control_syringe_checkbox_, SIGNAL(clicked(bool)),\
             rp_thread_controller, SLOT(set_control_syringe(bool)));
 
-    // Connect update plot signal to update plot
-    connect(&main_model_->rp_model(), SIGNAL(request_update_plot()), this, SLOT(receive_request_update_plot()));
+
 
 
     rp_thread->start();

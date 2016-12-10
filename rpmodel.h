@@ -17,8 +17,20 @@
 #include <QThread>
 
 // Project related
+#include <BufferIndex.h>
 #include <RPThreadController.h>
 
+class Baseline
+{
+public:
+    Baseline();
+
+    double mean_;
+    double lower_thresh_;
+    double upper_thresh_;
+    void update(double mean, double std_dev, double multiplier);
+
+};
 
 class RPModel : public QObject
 {
@@ -33,10 +45,22 @@ public:
 
 
     // Buffer things
-    unsigned int buffer_size_;
+    BufferIndex i_;
+    unsigned int buffer_length_;
     unsigned int buffer_head_;
     std::vector<double> time_buffer_;
     std::vector<double> data_buffer_;
+
+    // Parser things
+    Baseline baseline_;
+    int baseline_length_;
+    double threshold_multiplier_;
+    bool looking_for_event_stop_;
+    bool looking_for_event_start_;
+
+
+
+
 
 
 signals:
@@ -60,6 +84,8 @@ private:
 
     // Parser
     void parse_buffer();
+    void look_for_event_start();
+    void look_for_event_stop();
 
     // Misc
     unsigned int get_time_ms(); // Gets current system time in ms. Doesn't belong here,
@@ -76,7 +102,7 @@ private:
     TaskHandle daq_task_handle_;
     int32 sampling_frequency_;      // Total sample rate =
     int32 samples_per_channel_;     //       sampling_frequency_ x samples_per_channel_
-    uInt32 sample_buffer_size_;
+    uInt32 sample_buffer_length_;
     float64* sample_buffer_;
 
 

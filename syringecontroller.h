@@ -18,15 +18,30 @@ class SyringeController : public QObject
 public:
     SyringeController(MainModel* main_model, MainView* main_view);
 
+    void setup_connections();
+
 public slots:
-    // Public methods
-    void set_local();
-    void set_remote();
-    void set_forward();
-    void set_stop();
-    void set_reverse();
-    void switch_direction();
-    void set_rate();
+    // Model commands
+    void command_model_set_local();
+    void command_model_set_remote();
+    void command_model_set_forward();
+    void command_model_set_stop();
+    void command_model_set_reverse();
+    void command_model_switch_direction();
+    void command_model_get_rate();
+    void command_model_set_rate();
+
+    // View commands
+    void command_view_remote_button_up();
+    void command_view_remote_button_down();
+    void command_view_forward_button_up();
+    void command_view_forward_button_down();
+    void command_view_reverse_button_up();
+    void command_view_reverse_button_down();
+    void command_view_stop_button_up();
+    void command_view_stop_button_down();
+    void command_view_current_rate_field_change(double rate);
+
 
 private:
 

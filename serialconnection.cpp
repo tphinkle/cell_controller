@@ -66,6 +66,17 @@ std::string SerialConnection::write(std::string cmd)
     return read();
 }
 
+std::string SerialConnection::write_data_request(std::string cmd)
+{
+    DWORD bytes_written;
+
+    char cmd_buf[cmd.size()];
+    strcpy(cmd_buf, cmd.c_str());
+
+    bool return_value = WriteFile(serial_handle_, &cmd_buf, cmd.size(), &bytes_written, NULL);
+    return read_data();
+}
+
 std::string SerialConnection::read()
 {
     int len = 100;
@@ -78,7 +89,6 @@ std::string SerialConnection::read()
 
     do
     {
-        //std::cout << "Trying to read a byte." << std::endl;
         ReadFile(serial_handle_, &buf, sizeof(buf), &bytes_read, NULL);
     } while(bytes_read > 0);
 
@@ -104,7 +114,49 @@ std::string SerialConnection::read()
     }
 
 
-    //std::cout << "this is the final byte" << return_value << "\n";
+
+
 
     return return_value;
+}
+
+std::string SerialConnection::read_data()
+{
+    int len = 100;
+    char buf[100];
+
+    DWORD bytes_read;
+
+
+    PurgeComm(serial_handle_, PURGE_RXCLEAR); // Purge input buffer before reading
+
+    do
+    {
+        ReadFile(serial_handle_, &buf, sizeof(buf), &bytes_read, NULL);
+    } while(bytes_read > 0);
+
+    std::string read_value = std::string(buf);
+    std::string return_value;
+
+    for(size_t i = 0; i < read_value.size(); i++)
+    {
+        if (read_value[i] == '<')
+        {
+            return_value += '<';
+        }
+
+        else if (read_value[i] == '>')
+        {
+            return_value += '>';
+        }
+
+        else if (read_value[i] == ':')
+        {
+            return_value += ':';
+        }
+    }
+
+
+    return read_value;
+
 }

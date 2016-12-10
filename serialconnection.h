@@ -11,7 +11,9 @@ public:
     ~SerialConnection();
 
     std::string write(std::string cmd);
+    std::string write_data_request(std::string cmd);
     std::string read();
+    std::string read_data();
 
 private:
     HANDLE serial_handle_;

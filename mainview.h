@@ -13,6 +13,8 @@
 #include <QLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QFont>
+
 
 // Qwt
 #include <qwt_plot.h>
@@ -49,10 +51,22 @@ public:
 
     // UI Elements
 
+    ///////////////////////////////////////////
+    // Fonts
+    ///////////////////////////////////////////
+
+    QFont* major_label_font_;
+    QFont* minor_label_font_;
+    QFont* button_font_;
+    QFont* checkbox_font_;
+
 
     ///////////////////////////////////////////
     // Syringe
     ///////////////////////////////////////////
+
+    // Main label
+    QLabel* syringe_label_;
 
     // Buttons
     QPushButton* syringe_local_button_;
@@ -61,17 +75,24 @@ public:
     QPushButton* syringe_stop_button_;
     QPushButton* syringe_reverse_button_;
     QPushButton* syringe_switch_button_;
+    QPushButton* syringe_get_rate_button_;
     QPushButton* syringe_set_rate_button_;
 
     // Labels and fields
-    QLabel* syringe_rate_label_;
-    QLineEdit* syringe_rate_field_;
+    QLabel* syringe_current_rate_label_;
+    QLineEdit* syringe_current_rate_field_;
+    QLabel* syringe_set_rate_label_;
+
+
+    QLineEdit* syringe_set_rate_field_;
 
 
     ///////////////////////////////////////////
     // RP
     ///////////////////////////////////////////
 
+    // Label
+    QLabel* rp_control_label_;
 
 
     // Plot and plot items
@@ -91,14 +112,17 @@ public:
     // Camera
     ///////////////////////////////////////////
 
+    // Label
+    QLabel* camera_control_label_;
+
     // Buttons
     QPushButton* camera_start_button_;
     QPushButton* camera_stop_button_;
 
     // Plot
-    QGraphicsScene* scene_;
-    QGraphicsPixmapItem* pixmapitem_;
-    QGraphicsView* view_;
+    QGraphicsScene* camera_scene_;
+    QGraphicsPixmapItem* camera_pixmapitem_;
+    QGraphicsView* camera_view_;
 
 
 

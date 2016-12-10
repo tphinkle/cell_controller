@@ -7,18 +7,20 @@
 SyringeModel::SyringeModel()
 {
 
-    direction_ = NONE;
+    operating_mode_ = OperatingMode::UNKNOWN;
+    motion_ = Motion::UNKNOWN;
+    direction_ = Direction::UNKNOWN;
+
 }
 
-
-void SyringeModel::set_local()
+void SyringeModel::syringe_set_local()
 {
     serial_connection_.write("KEY");
 
     return;
 }
 
-void SyringeModel::set_remote()
+void SyringeModel::syringe_set_remote()
 {
     std::string result = serial_connection_.write("\r");
 
@@ -27,19 +29,26 @@ void SyringeModel::set_remote()
     return;
 }
 
-void SyringeModel::set_forward()
+void SyringeModel::syringe_set_forward()
 {
-    if(direction_ == REVERSE)
+    if(direction_ == Direction::UNKNOWN)
     {
-        switch_direction();
+        syringe_set_remote();
+    }
+    else if(direction_ == Direction::REVERSE)
+    {
+        syringe_switch_direction();
     }
 
-    run();
+    if(motion_ == Motion::STOPPED)
+    {
+        syringe_run();
+    }
 
     return;
 }
 
-void SyringeModel::set_stop()
+void SyringeModel::syringe_set_stop()
 {
     std::string result = serial_connection_.write("STP\r");
 
@@ -47,19 +56,25 @@ void SyringeModel::set_stop()
     return;
 }
 
-void SyringeModel::set_reverse()
+void SyringeModel::syringe_set_reverse()
 {
-    if(direction_ == FORWARD)
+    if(direction_ == Direction::UNKNOWN)
     {
-        switch_direction();
+        syringe_set_remote();
     }
-
-    run();
+    else if(direction_ == Direction::FORWARD)
+    {
+        syringe_switch_direction();
+    }
+    if( motion_ == Motion::STOPPED)
+    {
+        syringe_run();
+    }
 
     return;
 }
 
-void SyringeModel::switch_direction()
+void SyringeModel::syringe_switch_direction()
 {
     std::string result = serial_connection_.write("REV\r");
 
@@ -67,7 +82,7 @@ void SyringeModel::switch_direction()
     return;
 }
 
-void SyringeModel::run()
+void SyringeModel::syringe_run()
 {
     std::string result = serial_connection_.write("RUN\r");
 
@@ -75,41 +90,106 @@ void SyringeModel::run()
     return;
 }
 
-void SyringeModel::set_rate(std::string rate)
+void SyringeModel::syringe_get_rate()
 {
-    std::cout << "strying to set rate..." << "MLM"+rate << std::endl;
+    std::string result = serial_connection_.write_data_request("RAT\r");
+    int N = result.length();
+    std::string parsed_result = result.substr(N-9, 5);
+    set_rate(std::stod(parsed_result));
+    return;
+}
+
+void SyringeModel::syringe_set_rate(std::string rate)
+{
     std::string result = serial_connection_.write("MLM"+rate+"\r");
+
+    syringe_get_rate();
+
+
     return;
 }
 
 void SyringeModel::update_state(std::string serial_return_buffer)
 {
 
-    //std::cout << "seral return buffer" << serial_return_buffer << std::endl;
+
+
+    set_operating_mode(OperatingMode::REMOTE);
 
     if (serial_return_buffer == ":")
     {
-        //std::cout << "STOPPED" << std::endl;
-        motion_ = STOPPED;
+
+        set_motion(Motion::STOPPED);
     }
     else
     {
-        motion_ = MOVING;
-        //std:: cout << "MOVING" << std::endl;
+        set_motion(Motion::MOVING);
+
 
         if( serial_return_buffer == ">")
         {
-            //std::cout << "FORWARD" << std::endl;
-            direction_ = FORWARD;
+            set_direction(Direction::FORWARD);
         }
 
         else if( serial_return_buffer == "<")
-        {
-            //std::cout << "REVERSE" << std::endl;
-            direction_ = REVERSE;
+        {            
+            set_direction(Direction::REVERSE);
         }
 
     }
+
+    return;
+}
+
+void SyringeModel::set_operating_mode(OperatingMode operating_mode)
+{
+    operating_mode_ = operating_mode;
+    if(operating_mode_ == OperatingMode::LOCAL)
+    {
+        emit(state_update_operating_mode_local());
+    }
+    else if(operating_mode_ == OperatingMode::REMOTE)
+    {
+        emit(state_update_operating_mode_remote());
+    }
+
+    return;
+}
+
+void SyringeModel::set_motion(Motion motion)
+{
+    motion_ = motion;
+    if(motion_ == Motion::MOVING)
+    {
+        emit(state_update_motion_moving());
+    }
+    else if(motion_ == Motion::STOPPED)
+    {
+        emit(state_update_motion_stopped());
+    }
+
+    return;
+}
+
+void SyringeModel::set_direction(Direction direction)
+{
+    direction_ = direction;
+    if(direction_ == Direction::FORWARD)
+    {
+        emit(state_update_direction_forward());
+    }
+    else if(direction_ == Direction::REVERSE)
+    {
+        emit(state_update_direction_reverse());
+    }
+
+    return;
+}
+
+void SyringeModel::set_rate(double rate)
+{
+    rate_ = rate;
+    emit(state_update_rate(rate));
 
     return;
 }

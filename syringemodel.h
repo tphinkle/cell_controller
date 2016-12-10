@@ -7,35 +7,73 @@
 // Project specific
 #include <serialconnection.h>
 
-class SyringeModel
+// Qt
+#include <QObject>
+
+class SyringeModel : public QObject
 {
+    Q_OBJECT
+
+
 public:
+
     SyringeModel();
+
+    // State types
+    enum class OperatingMode { UNKNOWN, LOCAL, REMOTE };
+    OperatingMode operating_mode_;
+
+    enum class Direction { UNKNOWN, FORWARD, REVERSE };
+    Direction direction_;
+
+    enum class Motion { UNKNOWN, STOPPED, MOVING };
+    Motion motion_;
+
+    double rate_;
+
 
 
     // Syringe methods
-    void set_local();
-    void set_remote();
-    void set_forward();
-    void set_stop();
-    void set_reverse();
-    void switch_direction();
-    void run();
-    void set_rate(std::string rate);
+    void syringe_set_local();
+    void syringe_set_remote();
+    void syringe_set_forward();
+    void syringe_set_stop();
+    void syringe_set_reverse();
+    void syringe_switch_direction();
+    void syringe_run();
+    void syringe_set_rate(std::string rate);
+    void syringe_get_rate();
+
+    void set_rate(double rate);
+    void set_operating_mode(OperatingMode operating_mode);
+    void set_motion(Motion motion);
+    void set_direction(Direction direction);
 
 private:
 
 
-    enum Direction {  NONE, FORWARD, REVERSE };
-    Direction direction_;
-
-    enum Motion { STOPPED, MOVING };
-    Motion motion_;
 
     SerialConnection serial_connection_;
 
     // Methods
     void update_state(std::string serial_return_buffer);
+
+signals:
+    // Operating mode
+    void state_update_operating_mode_local();
+    void state_update_operating_mode_remote();
+
+    // Motion
+    void state_update_motion_moving();
+    void state_update_motion_stopped();
+
+    // Direction
+    void state_update_direction_forward();
+    void state_update_direction_reverse();
+
+    // Rate
+    void state_update_rate(double rate);
+
 
 };
 
