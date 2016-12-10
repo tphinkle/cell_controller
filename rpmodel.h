@@ -17,7 +17,6 @@
 #include <QThread>
 
 // Project related
-#include <BufferIndex.h>
 #include <RPThreadController.h>
 
 class Baseline
@@ -45,7 +44,7 @@ public:
 
 
     // Buffer things
-    BufferIndex i_;
+    int i_;
     unsigned int buffer_length_;
     unsigned int buffer_head_;
     std::vector<double> time_buffer_;
@@ -84,6 +83,7 @@ private:
 
     // Parser
     void parse_buffer();
+    void update_baseline(int index);
     void look_for_event_start();
     void look_for_event_stop();
 

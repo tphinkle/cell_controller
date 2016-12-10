@@ -29,8 +29,7 @@ SOURCES += main.cpp\
     rpthreadcontroller.cpp \
     cameracontroller.cpp \
     cameramodel.cpp \
-    tcplayer.cpp \
-    bufferindex.cpp
+    tcplayer.cpp
 
 HEADERS  += \
     syringecontroller.h \
@@ -45,8 +44,7 @@ HEADERS  += \
     rpthreadcontroller.h \
     cameracontroller.h \
     cameramodel.h \
-    tcplayer.h \
-    bufferindex.h
+    tcplayer.h
 
 FORMS    += \
     mainview.ui

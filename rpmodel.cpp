@@ -39,7 +39,6 @@ RPModel::RPModel()
 
     // Buffer things
     buffer_length_ = 100000;
-    i_.buffer_length_ = buffer_length_;
     buffer_head_ = 0;
     time_buffer_.resize(buffer_length_);
     for(unsigned int i = 0; i < time_buffer_.size(); i++)
