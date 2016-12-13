@@ -45,8 +45,8 @@ public:
 
     // Buffer things
     int i_;
-    unsigned int buffer_length_;
-    unsigned int buffer_head_;
+    unsigned int data_buffer_length_;
+    unsigned int data_buffer_head_;
     std::vector<double> time_buffer_;
     std::vector<double> data_buffer_;
 

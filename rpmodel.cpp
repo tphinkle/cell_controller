@@ -38,14 +38,14 @@ RPModel::RPModel()
     sample_buffer_ = new float64[sample_buffer_length_];
 
     // Buffer things
-    buffer_length_ = 100000;
-    buffer_head_ = 0;
+    data_buffer_length_ = 100000;
+    data_buffer_head_ = 0;
     time_buffer_.resize(buffer_length_);
     for(unsigned int i = 0; i < time_buffer_.size(); i++)
     {
         time_buffer_[i] = i;
     }
-    data_buffer_.resize(buffer_length_);
+    data_buffer_.resize(data_buffer_length_);
 
 
     // Parser things
@@ -152,33 +152,79 @@ void RPModel::parse_buffer()
     // 2: i caught up to buffer head -> stop the loop
 
 
-    // LookForEventStart()
 
-    // LookForEventStop()
+    while(true)
+    {
 
+        if(looking_for_event_start_)
+        {
+            LookForEventStart();
+        }
 
-    return;
+        else if(looking_for_event_stop_)
+        {
+            LookForEventStop();
+        }
+
+        if(i_ == data_buffer_head_)
+        {
+            return;
+        }
+
+    }
+
 }
 
 
 void RPModel::look_for_event_start()
 {
-    while(looking_for_event_start_ == true)
+
+    if((data_buffer_[i_] > baseline_.upper_thresh_) || \
+    (data_buffer_[i_] < baseline_.lower_thresh_))
     {
+        // Update baseline to be sure point is still outside of range
+        update_baseline(i_ - baseline_length_);
+
+
+        // Check again
         if((data_buffer_[i_] > baseline_.upper_thresh_) || \
-           (data_buffer_[i_] < baseline_.lower_thresh_))
+                (data_buffer_[i_] < baseline_.lower_thresh_))
         {
-            update_baseline(i_ - baseline_length_);
+            looking_for_event_start_ = false;
+            looking_for_event_stop_ = true;
 
         }
 
+
     }
 
+    i_ = (i_+1)%buffer_length_;
+
+
     return;
+
+
+
+
 }
 
 void RPModel::look_for_event_stop()
 {
+
+    if((data_buffer_[i_] <= baseline_.upper_thresh_) & \
+        (data_buffer_[i_] >= baseline_.lower_thresh_))
+    {
+
+        // Emit event stop found
+        // Stop recording RP
+        // Stop recording camera...?
+        // Reverse syringe
+
+        looking_for_event_start_ = true;
+        looking_for_event_stop_ = false;
+    }
+
+    i_ = (i_+1)%buffer_length_;
 
     return;
 }

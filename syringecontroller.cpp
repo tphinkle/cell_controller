@@ -156,6 +156,18 @@ void SyringeController::command_model_switch_direction()
 
 void SyringeController::command_view_remote_button_up()
 {
+    main_view_->syringe_local_button_->setEnabled(true);
+    return;
+}
+
+void SyringeController::command_view_remote_button_down()
+{
+    main_view_->syringe_local_button_->setEnabled(false);
+    return;
+}
+
+void SyringeController::command_view_remote_button_up()
+{
     main_view_->syringe_remote_button_->setEnabled(true);
     return;
 }

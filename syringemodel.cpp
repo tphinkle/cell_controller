@@ -94,8 +94,14 @@ void SyringeModel::syringe_get_rate()
 {
     std::string result = serial_connection_.write_data_request("RAT\r");
     int N = result.length();
-    std::string parsed_result = result.substr(N-9, 5);
-    set_rate(std::stod(parsed_result));
+    std::cout << "result = " << result << std::endl;
+
+    // Check string to make sure it is of appropriate length
+    if(N > 9)
+    {
+        std::string parsed_result = result.substr(N-9, 5);
+        set_rate(std::stod(parsed_result));
+    }
     return;
 }
 

@@ -32,6 +32,8 @@ public slots:
     void command_model_set_rate();
 
     // View commands
+    void command_view_local_button_up();
+    void command_view_local_button_down();
     void command_view_remote_button_up();
     void command_view_remote_button_down();
     void command_view_forward_button_up();
