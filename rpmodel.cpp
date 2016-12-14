@@ -2,6 +2,7 @@
 #include <iostream>
 #include <time.h>
 #include <chrono>
+#include <math.h>
 
 // Windows
 #include <windows.h>
@@ -31,16 +32,16 @@ RPModel::RPModel()
 
 
     // DAQ things
-    sampling_frequency_ = 250000;//50000;
-    samples_per_channel_ = 500;//50;
-    sample_buffer_length_ = 500;
+    sampling_frequency_ = 5000; //250000;
+    samples_per_channel_ = pow(2,9); //512
+    sample_buffer_length_ = pow(2,9); //512
 
     sample_buffer_ = new float64[sample_buffer_length_];
 
     // Buffer things
-    data_buffer_length_ = 100000;
+    data_buffer_length_ = pow(2,17); //131072
     data_buffer_head_ = 0;
-    time_buffer_.resize(buffer_length_);
+    time_buffer_.resize(data_buffer_length_);
     for(unsigned int i = 0; i < time_buffer_.size(); i++)
     {
         time_buffer_[i] = i;
@@ -48,10 +49,22 @@ RPModel::RPModel()
     data_buffer_.resize(data_buffer_length_);
 
 
+    // Set up buffers for displaying the baseline. This is sort of hackish, but is necessary to have to make plotting the baseline easier.
+    baseline_time_buffer_.resize(2);                                                // baseline time
+    baseline_time_buffer_[0] = time_buffer_[0];
+    baseline_time_buffer_[1] = time_buffer_[time_buffer_.size() - 1];
+    baseline_mean_buffer_.resize(2);                                                // baseline mean
+    baseline_lower_thresh_buffer_.resize(2);                                        // baseline lower thresh
+    baseline_upper_thresh_buffer_.resize(2);                                        // baseline upper thresh
+
+
+
     // Parser things
+    i_ = 0;
+    baseline_length_ = 200;
     looking_for_event_start_ = true;
     looking_for_event_stop_ = false;
-    threshold_multiplier_ = 5;
+    threshold_multiplier_ = 10;
 
 
 }
@@ -63,16 +76,32 @@ void RPModel::start_main_loop()
     create_DAQ_task();
 
 
+    sample_DAQ();
 
-    last_plot_update_time_ = get_time_ms();
+
+    update_buffer();
+
+
+    update_baseline(0);
+
+    i_ = i_ + baseline_length_;
+
+
+
 
     while(thread_controller_->run() == true)
     {
-        sample_DAQ();
-        update_buffer();
-        parse_buffer();
-        // check_update_plot();
+        process_buffer();             // Process the data in the buffer.
+        //std::cout << "a" << std::endl;
+        sample_DAQ();               // Sample the DAQ for more data.
+        //std::cout << "b" << std::endl;
+        update_buffer();            // Add the new data from the DAQ to the buffer.
+        //std::cout << "c" << std::endl;
+
+        //std::cout << i_ << std::endl;
     }
+
+
 
     return;
 
@@ -134,18 +163,19 @@ void RPModel::sample_DAQ()
 
 void RPModel::update_buffer()
 {
+
     // Shift sample reference to buffer
     for(unsigned int i = 0; i < sample_buffer_length_; i++)
     {
-        data_buffer_[(buffer_head_+i)%buffer_length_] = sample_buffer_[i];
+        data_buffer_[(data_buffer_head_+i)%data_buffer_length_] = sample_buffer_[i];
     }
 
     // Increment the buffer head
-    buffer_head_ = (buffer_head_ + sample_buffer_length_)%buffer_length_;
+    data_buffer_head_ = (data_buffer_head_ + sample_buffer_length_)%data_buffer_length_;
     return;
 }
 
-void RPModel::parse_buffer()
+void RPModel::process_buffer()
 {
     // Control method: Everytime i is incremented, do one of two things
     // 1: i not caught up to buffer head -> return to start of while
@@ -158,20 +188,27 @@ void RPModel::parse_buffer()
 
         if(looking_for_event_start_)
         {
-            LookForEventStart();
+            //std::cout << "1" << std::endl;
+            //std::cout << "i = " << i_ << std::endl;
+            look_for_event_start();
         }
+
 
         else if(looking_for_event_stop_)
         {
-            LookForEventStop();
+            //std::cout << "2" << std::endl;
+            look_for_event_stop();
         }
 
         if(i_ == data_buffer_head_)
         {
+            //std::cout << "3" << std::endl;
             return;
         }
 
     }
+
+    return;
 
 }
 
@@ -179,11 +216,25 @@ void RPModel::parse_buffer()
 void RPModel::look_for_event_start()
 {
 
+
+
     if((data_buffer_[i_] > baseline_.upper_thresh_) || \
     (data_buffer_[i_] < baseline_.lower_thresh_))
     {
+
+        std::cout << "Event start found!" << std::endl;
+
         // Update baseline to be sure point is still outside of range
-        update_baseline(i_ - baseline_length_);
+        int index = i_ - baseline_length_;
+
+
+        if(index < 0)
+        {
+            index = data_buffer_length_ - i_ - baseline_length_;
+        }
+
+        update_baseline(index);
+
 
 
         // Check again
@@ -198,13 +249,14 @@ void RPModel::look_for_event_start()
 
     }
 
-    i_ = (i_+1)%buffer_length_;
+
+
+
+
+    increment_i();
 
 
     return;
-
-
-
 
 }
 
@@ -224,7 +276,7 @@ void RPModel::look_for_event_stop()
         looking_for_event_stop_ = false;
     }
 
-    i_ = (i_+1)%buffer_length_;
+    increment_i();
 
     return;
 }
@@ -233,20 +285,42 @@ void RPModel::update_baseline(int index)
 {
     double mean = 0;
 
+
+
     for(int i = index; i < index + baseline_length_; i++)
     {
         mean += data_buffer_[i];
     }
+
     mean = mean/baseline_length_;
 
     double std_dev = 0;
     for(int i = index; i < index + baseline_length_; i++)
     {
-        std_dev = std_dev + std::pow(data_buffer_[i] - mean, 2);
+        std_dev += pow(data_buffer_[i] - mean, 2.);
     }
-    std_dev = std_dev/baseline_length_;
+    std_dev = pow(std_dev/baseline_length_, 0.5);
 
     baseline_.update(mean, std_dev, threshold_multiplier_);
+
+
+    // Update baseline buffers for plotting
+    baseline_mean_buffer_[0] = baseline_.mean_;
+    baseline_mean_buffer_[1] = baseline_.mean_;
+
+    baseline_lower_thresh_buffer_[0] = baseline_.lower_thresh_;
+    baseline_lower_thresh_buffer_[1] = baseline_.lower_thresh_;
+
+    baseline_upper_thresh_buffer_[0] = baseline_.upper_thresh_;
+    baseline_upper_thresh_buffer_[1] = baseline_.upper_thresh_;
+
+
+    std::cout << "This should display..." << std::endl;
+    std::cout << baseline_time_buffer_[1] << std::endl;
+    std::cout << baseline_mean_buffer_[1] << std::endl;
+    std::cout << baseline_lower_thresh_buffer_[1] << std::endl;
+    std::cout << baseline_upper_thresh_buffer_[1] << std::endl;
+
 
     return;
 
@@ -263,4 +337,14 @@ unsigned int RPModel::get_time_ms()
 
     return time_ms;
 
+}
+
+
+// Bit-wise operator to inrement the buffer reader (i_) that is faster than using modular arithmetic. Only works if buffer is of size 2^n for uint n.
+void RPModel::increment_i()
+{
+    //i_ = (i_+1)&data_buffer_length_; // bit-wise
+    i_ = (i_+1)%data_buffer_length_;
+
+    return;
 }

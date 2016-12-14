@@ -56,6 +56,19 @@ void MainView::setup_rp_view()
     rp_plot_curve_ = new QwtPlotCurve(QwtText("RP Data"));
     rp_plot_curve_->attach(rp_plot_);
 
+
+    rp_baseline_mean_plot_curve_ = new QwtPlotCurve(QwtText("Baseline mean"));
+    rp_baseline_mean_plot_curve_->setPen(* new QPen(Qt::red));
+    rp_baseline_mean_plot_curve_->attach(rp_plot_);
+
+    rp_baseline_lower_thresh_plot_curve_ = new QwtPlotCurve(QwtText("Baseline lower threshold"));
+    rp_baseline_lower_thresh_plot_curve_->setPen(* new QPen(Qt::red));
+    rp_baseline_lower_thresh_plot_curve_->attach(rp_plot_);
+
+    rp_baseline_upper_thresh_plot_curve_ = new QwtPlotCurve(QwtText("Baseline upper threshold"));
+    rp_baseline_upper_thresh_plot_curve_->setPen(* new QPen(Qt::red));
+    rp_baseline_upper_thresh_plot_curve_->attach(rp_plot_);
+
     rp_plot_->setAxisTitle(QwtPlot::xBottom, "Sample");
     rp_plot_->setAxisTitle(QwtPlot::yLeft, "Current (xA)");
 

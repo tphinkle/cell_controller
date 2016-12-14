@@ -22,7 +22,21 @@ void MainController::setup_connections()
                 &main_model_->rp_model().data_buffer_.front(),\
                 main_model_->rp_model().data_buffer_.size()\
                 );
-    //main_model_->rp_model().buffer_
+
+    main_view_->rp_baseline_mean_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().baseline_time_buffer_.front(),
+                &main_model_->rp_model().baseline_mean_buffer_.front(),
+                2);
+
+    main_view_->rp_baseline_lower_thresh_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().baseline_time_buffer_.front(),
+                &main_model_->rp_model().baseline_lower_thresh_buffer_.front(),
+                2);
+
+    main_view_->rp_baseline_upper_thresh_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().baseline_time_buffer_.front(),
+                &main_model_->rp_model().baseline_upper_thresh_buffer_.front(),
+                2);
 
 
 

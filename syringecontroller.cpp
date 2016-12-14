@@ -154,13 +154,13 @@ void SyringeController::command_model_switch_direction()
 /// VIEW COMMANDS
 ///////////////////////////////////////////////////////////////////////////////////////
 
-void SyringeController::command_view_remote_button_up()
+void SyringeController::command_view_local_button_up()
 {
     main_view_->syringe_local_button_->setEnabled(true);
     return;
 }
 
-void SyringeController::command_view_remote_button_down()
+void SyringeController::command_view_local_button_down()
 {
     main_view_->syringe_local_button_->setEnabled(false);
     return;

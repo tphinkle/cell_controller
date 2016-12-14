@@ -98,6 +98,9 @@ public:
     // Plot and plot items
     QwtPlot* rp_plot_;
     QwtPlotCurve* rp_plot_curve_;
+    QwtPlotCurve* rp_baseline_mean_plot_curve_;
+    QwtPlotCurve* rp_baseline_lower_thresh_plot_curve_;
+    QwtPlotCurve* rp_baseline_upper_thresh_plot_curve_;
 
 
     // Buttons

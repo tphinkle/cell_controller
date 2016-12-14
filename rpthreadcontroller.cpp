@@ -17,6 +17,11 @@ RPThreadController::RPThreadController(bool control_syringe, bool control_camera
 
 }
 
+RPThreadController::~RPThreadController()
+{
+    stop_run();
+}
+
 void RPThreadController::stop_run()
 {
     run_ = false;

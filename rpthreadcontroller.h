@@ -10,6 +10,7 @@ class RPThreadController : public QObject
 
 public:
     RPThreadController(bool control_syringe, bool control_camera);
+    ~RPThreadController();
 
     // Get
     bool run();
