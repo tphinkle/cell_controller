@@ -16,6 +16,8 @@ MainView::MainView(QWidget *parent) :
 
 }
 
+
+
 void MainView::setup()
 {
     setup_main_view();
@@ -86,6 +88,13 @@ void MainView::setup_rp_view()
 
     rp_stop_button_ = new QPushButton("Stop RP", this);
     rp_stop_button_->setFont(*button_font_);
+
+    rp_set_threshold_multiplier_button_ = new QPushButton("Threshold multiplier", this);
+    rp_set_threshold_multiplier_button_->setFont(*button_font_);
+
+    // Fields
+    rp_threshold_multiplier_field_ = new QLineEdit("", this);
+    rp_threshold_multiplier_field_->setFont(*minor_label_font_);
 
 
     // Checkboxes
@@ -243,6 +252,8 @@ void MainView::setup_layout()
     controls_layout->addWidget(rp_control_label_);
     controls_layout->addWidget(rp_start_button_);
     controls_layout->addWidget(rp_stop_button_);
+    controls_layout->addWidget(rp_set_threshold_multiplier_button_);
+    controls_layout->addWidget(rp_threshold_multiplier_field_);
     controls_layout->addWidget(rp_control_syringe_checkbox_);
     controls_layout->addWidget(rp_control_camera_checkbox_);
     controls_layout->addWidget(camera_control_label_);

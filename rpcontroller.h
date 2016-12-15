@@ -19,8 +19,14 @@ public:
     QTimer* rp_plot_timer_;
     int rp_plot_period_;
 
+    void setup_connections();
+
 public slots:
     void start_main_loop();
+    void request_change_threshold_multiplier();
+
+signals:
+    void command_set_threshold_multiplier(double threshold_multiplier);
 
 private:
     MainModel*  main_model_;

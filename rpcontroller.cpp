@@ -1,4 +1,11 @@
+
+// Standard library
+#include <iostream>
+
+// Program specific
 #include "rpcontroller.h"
+
+// Qt
 #include <QThread>
 
 RPController::RPController(MainModel* main_model, MainView* main_view)
@@ -11,6 +18,20 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
     rp_plot_timer_ = new QTimer();
     rp_plot_timer_->setInterval(rp_plot_period_);
 
+}
+
+void RPController::setup_connections()
+{
+    QObject::connect(this, RPController::command_set_threshold_multiplier, &main_model_->rp_model(), RPModel::set_threshold_multiplier);
+    return;
+}
+
+void RPController::request_change_threshold_multiplier()
+{
+    std::cout << "Trying to change the threshold multiplier." << std::endl;
+    double value = main_view_->rp_threshold_multiplier_field_->text().toDouble();
+    emit command_set_threshold_multiplier(value);
+    return;
 }
 
 
@@ -33,7 +54,7 @@ void RPController::start_main_loop()
     connect(rp_thread, SIGNAL(started()), &main_model_->rp_model(), SLOT(start_main_loop()));
 
 
-
+    QObject::connect(this, RPController::command_set_threshold_multiplier, &main_model_->rp_model(), RPModel::set_threshold_multiplier, Qt::QueuedConnection);
 
     // Connect end main loop to stop thread
     connect(main_view_->rp_stop_button_, SIGNAL(clicked()), rp_thread_controller, SLOT(stop_run()));

@@ -10,3 +10,8 @@ CameraController::CameraController()
 
 }
 
+void CameraController::setup_connections()
+{
+
+    return;
+}

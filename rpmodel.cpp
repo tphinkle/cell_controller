@@ -32,7 +32,7 @@ RPModel::RPModel()
 
 
     // DAQ things
-    sampling_frequency_ = 5000; //250000;
+    sampling_frequency_ = 250000; //250000;
     samples_per_channel_ = pow(2,9); //512
     sample_buffer_length_ = pow(2,9); //512
 
@@ -66,6 +66,8 @@ RPModel::RPModel()
     looking_for_event_stop_ = false;
     threshold_multiplier_ = 10;
 
+    threshold_multiplier_ptr_ = new double(10);
+
 
 }
 
@@ -88,17 +90,13 @@ void RPModel::start_main_loop()
 
 
 
-
     while(thread_controller_->run() == true)
     {
         process_buffer();             // Process the data in the buffer.
-        //std::cout << "a" << std::endl;
-        sample_DAQ();               // Sample the DAQ for more data.
-        //std::cout << "b" << std::endl;
-        update_buffer();            // Add the new data from the DAQ to the buffer.
-        //std::cout << "c" << std::endl;
 
-        //std::cout << i_ << std::endl;
+        sample_DAQ();               // Sample the DAQ for more data.
+
+        update_buffer();            // Add the new data from the DAQ to the buffer.
     }
 
 
@@ -123,9 +121,6 @@ void RPModel::create_DAQ_task()
     // Configure timing parameters
     DAQmxCfgSampClkTiming(daq_task_handle_, "OnboardClock", sampling_frequency_, DAQmx_Val_Rising,\
                      DAQmx_Val_ContSamps, samples_per_channel_);
-
-
-
 
     // Start the task. **This may belong in RPModel::start_DAQ_Task()!**
     DAQmxStartTask(daq_task_handle_);
@@ -267,10 +262,14 @@ void RPModel::look_for_event_stop()
         (data_buffer_[i_] >= baseline_.lower_thresh_))
     {
 
+
+
         // Emit event stop found
         // Stop recording RP
         // Stop recording camera...?
         // Reverse syringe
+
+        std::cout << "\tEvent stop found!" << std::endl;
 
         looking_for_event_start_ = true;
         looking_for_event_stop_ = false;
@@ -315,13 +314,6 @@ void RPModel::update_baseline(int index)
     baseline_upper_thresh_buffer_[1] = baseline_.upper_thresh_;
 
 
-    std::cout << "This should display..." << std::endl;
-    std::cout << baseline_time_buffer_[1] << std::endl;
-    std::cout << baseline_mean_buffer_[1] << std::endl;
-    std::cout << baseline_lower_thresh_buffer_[1] << std::endl;
-    std::cout << baseline_upper_thresh_buffer_[1] << std::endl;
-
-
     return;
 
 }
@@ -339,6 +331,13 @@ unsigned int RPModel::get_time_ms()
 
 }
 
+
+void RPModel::set_threshold_multiplier(double threshold_multiplier)
+{
+    std::cout << "Setting threshold multiplier!: " << threshold_multiplier << std::endl;
+    threshold_multiplier_ = threshold_multiplier;
+    return;
+}
 
 // Bit-wise operator to inrement the buffer reader (i_) that is faster than using modular arithmetic. Only works if buffer is of size 2^n for uint n.
 void RPModel::increment_i()

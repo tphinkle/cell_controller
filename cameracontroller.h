@@ -11,6 +11,8 @@ class CameraController
 public:
     CameraController();
 
+    void setup_connections();
+
     int camera_display_period_;
     QTimer* camera_display_timer_;
 

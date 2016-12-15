@@ -9,14 +9,29 @@ MainController::MainController(MainModel* main_model, MainView* main_view) :
     main_model_ = main_model;
     main_view_ = main_view;
 
-    setup_connections();
+    setup_ui_connections();
+
+    setup_cross_connections();
+
+    syringe_controller_.setup_connections();
+
+    rp_controller_.setup_connections();
+
+    camera_controller_.setup_connections();
 
 }
 
-void MainController::setup_connections()
+void MainController::setup_ui_connections()
 {
 
-    // Connect data pointers from Model to QwtPlot
+
+
+    // RP
+    QObject::connect(main_view_->rp_set_threshold_multiplier_button_, &QPushButton::clicked,\
+                     &rp_controller_, &RPController::request_change_threshold_multiplier, Qt::QueuedConnection);
+
+    QObject::connect(main_view_->rp_start_button_, &QPushButton::clicked,\
+                     &rp_controller_, &RPController::start_main_loop);
     main_view_->rp_plot_curve_->setRawSamples(\
                 &main_model_->rp_model().time_buffer_.front(),\
                 &main_model_->rp_model().data_buffer_.front(),\
@@ -37,24 +52,21 @@ void MainController::setup_connections()
                 &main_model_->rp_model().baseline_time_buffer_.front(),
                 &main_model_->rp_model().baseline_upper_thresh_buffer_.front(),
                 2);
+    QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()), rp_controller_.rp_plot_timer_, SLOT(start()));
+    QObject::connect(rp_controller_.rp_plot_timer_, SIGNAL(timeout()), main_view_->rp_plot_, SLOT(replot()));
+    QObject::connect(rp_controller_.rp_plot_timer_, SIGNAL(timeout()), rp_controller_.rp_plot_timer_, SLOT(start()));
 
 
 
-    // MainView -> RPController
-    QObject::connect(main_view_->rp_start_button_, &QPushButton::clicked,\
-                     &rp_controller_, &RPController::start_main_loop);
 
+    return;
+}
+
+void MainController::setup_cross_connections()
+{
     // RPModel to SyringeController connections
     QObject::connect(&main_model_->rp_model(), SIGNAL(request_syringe_switch_direction()),\
                      &syringe_controller_, SLOT(command_model_switch_direction()));
-
-
-    // Timers
-    QObject::connect(rp_controller_.rp_plot_timer_, SIGNAL(timeout()), main_view_->rp_plot_, SLOT(replot()));
-    QObject::connect(rp_controller_.rp_plot_timer_, SIGNAL(timeout()), rp_controller_.rp_plot_timer_, SLOT(start()));
-    QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()), rp_controller_.rp_plot_timer_, SLOT(start()));
-
-
 
     return;
 }

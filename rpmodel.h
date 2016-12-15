@@ -64,6 +64,7 @@ public:
     Baseline baseline_;
     int baseline_length_;
     double threshold_multiplier_;
+    double* threshold_multiplier_ptr_;
     bool looking_for_event_stop_;
     bool looking_for_event_start_;
 
@@ -78,6 +79,9 @@ signals:
 
 public slots:
     void start_main_loop();
+
+    // Setters/getters
+    void set_threshold_multiplier(double threshold_multiplier);
 
 private:
     ///////////////////////////////////////////

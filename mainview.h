@@ -103,9 +103,13 @@ public:
     QwtPlotCurve* rp_baseline_upper_thresh_plot_curve_;
 
 
+    // Fields
+    QLineEdit* rp_threshold_multiplier_field_;
+
     // Buttons
     QPushButton* rp_start_button_;
     QPushButton* rp_stop_button_;
+    QPushButton* rp_set_threshold_multiplier_button_;
 
     // Check boxes
     QCheckBox* rp_control_syringe_checkbox_;
