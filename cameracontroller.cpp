@@ -12,6 +12,8 @@ CameraController::CameraController()
 
 void CameraController::setup_connections()
 {
+    //connect(camera_display_timer_)
+
 
     return;
 }

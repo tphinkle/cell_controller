@@ -10,6 +10,9 @@
 // Program specific
 #include "rpmodel.h"
 
+// Qt
+#include <QApplication>
+
 Baseline::Baseline()
 {
 
@@ -74,6 +77,8 @@ RPModel::RPModel()
 
 void RPModel::start_main_loop()
 {
+
+    //QApplication::processEvents();
 
     create_DAQ_task();
 

@@ -24,9 +24,32 @@ MainController::MainController(MainModel* main_model, MainView* main_view) :
 void MainController::setup_ui_connections()
 {
 
+    ////////////////////////////////////////////
+    // Camera
+    ////////////////////////////////////////////
+
+    // Start button -> start live view timer
+    QObject::connect(main_view_->camera_start_button_, SIGNAL(clicked()), camera_controller_.camera_display_timer_, SLOT(start()));
+
+    // Timer timeout -> Update live view
+    QObject::connect(camera_controller_.camera_display_timer_, SIGNAL(timeout()), camera_controller_.update_live_view_, SLOT(start()));
+
+    // Receive new image -> Request update image
+    QObject::connect(main_model_->camera_model(), SIGNAL(state_update_new_live_image()), camera_controller_.
+
+    // Timer finished -> Restart timer
+    QObject::connect(camera_controller_.camera_display_timer_, SIGNAL(timeout()), camera_controller_.camera_display_timer_, SLOT(start()));
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                main_view_->camera_pixmapitem_
+    main_view_->camera_image_->loadFromData(main_model_->camera_model().live_image_pointer_, 640*480, QImage::Format_Indexed8);
+    main_view_->camera_scene_->clear();
+    main_view_->camera_scene_->addPixmap(QPixmap::fromImage())
 
 
-    // RP
+    ////////////////////////////////////////////
+    // Resistive pulse (RP)
+    ////////////////////////////////////////////
+
     QObject::connect(main_view_->rp_set_threshold_multiplier_button_, &QPushButton::clicked,\
                      &rp_controller_, &RPController::request_change_threshold_multiplier, Qt::QueuedConnection);
 

@@ -67,9 +67,18 @@ void TCPLayer::initialize(int command_port, int data_port, std::string camera_ip
 
 bool TCPLayer::start_winsock()
 {
-    std::cout << "\tTrying to open winsock." << std::endl;
 
-    std::cout << "\t\tWinsock opened." << std::endl;
+    std::cout << "\tTrying to open winsock." << std::endl;
+    WSAData wsadata;
+    int result = WSAStartup(MAKEWORD(2,2), &wsadata);
+    if(result != 0)
+    {
+        std::cout << "\t\tFailed to open Winsocket." << std::endl;
+        return false;
+    }
+
+    std::cout  << "\t\tWinsocket opened." << std::endl;
+
 
     return true;
 }
@@ -96,6 +105,7 @@ bool TCPLayer::open_command_socket()
     if(error == SOCKET_ERROR)
     {
         std::cout << "\t\tFailed to connect command socket: " << WSAGetLastError() << std::endl;
+        return false;
     }
 
     std::cout << "\t\tCommand socket opened." << std::endl;
