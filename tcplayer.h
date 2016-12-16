@@ -10,6 +10,8 @@
 #include <Ws2tcpip.h>
 #include <windows.h>
 
+#include <QObject>
+
 class TCPLayer
 {
 
@@ -30,7 +32,7 @@ public:
 
     // Commands
     std::string send_command(std::string command);
-    void send_data_request(std::string command, std::vector<char>& buffer);
+    void send_data_request(std::string command, std::vector<uchar>& buffer);
 
     // Closing
     void close();

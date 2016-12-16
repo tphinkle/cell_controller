@@ -16,7 +16,6 @@ class MainController : public QObject
 public:
     MainController(MainModel* main_model, MainView* main_view);
 
-    void setup_ui_connections();
     void setup_cross_connections();
 
 

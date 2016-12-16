@@ -22,11 +22,10 @@ public:
     void setup_connections();
 
 public slots:
-    void start_main_loop();
-    void request_change_threshold_multiplier();
+    void receive_request_view_start_main_loop();
+
 
 signals:
-    void command_set_threshold_multiplier(double threshold_multiplier);
 
 private:
     MainModel*  main_model_;

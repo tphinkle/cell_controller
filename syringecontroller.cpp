@@ -13,79 +13,74 @@ SyringeController::SyringeController(MainModel* main_model, MainView* main_view)
     main_model_ = main_model;
     main_view_ = main_view;
 
+
+    syringe_thread_ = new QThread();
+    main_model_->syringe_model().moveToThread(syringe_thread_);
+
     setup_connections();
+
+
+
+    syringe_thread_->start();
 }
 
 void SyringeController::setup_connections()
 {
+
+
+
     // View -> Controller
     QObject::connect(main_view_->syringe_remote_button_, &QPushButton::clicked,\
-                     this, &SyringeController::command_model_set_remote);
+                     this, &SyringeController::receive_request_set_remote);
 
     QObject::connect(main_view_->syringe_forward_button_, &QPushButton::clicked,\
-                     this, &SyringeController::command_model_set_forward);
+                     this, &SyringeController::receive_request_set_forward);
 
     QObject::connect(main_view_->syringe_stop_button_, &QPushButton::clicked,\
-                     this, &SyringeController::command_model_set_stop);
+                     this, &SyringeController::receive_request_set_stop);
 
     QObject::connect(main_view_->syringe_reverse_button_, &QPushButton::clicked,\
-                     this, &SyringeController::command_model_set_reverse);
+                     this, &SyringeController::receive_request_set_reverse);
 
     QObject::connect(main_view_->syringe_switch_button_, &QPushButton::clicked,\
-                     this, &SyringeController::command_model_switch_direction);
+                     this, &SyringeController::receive_request_switch_direction);
 
     QObject::connect(main_view_->syringe_get_rate_button_, &QPushButton::clicked,\
-                     this, &SyringeController::command_model_get_rate);
+                     this, &SyringeController::receive_request_get_rate);
 
     QObject::connect(main_view_->syringe_set_rate_button_, &QPushButton::clicked,\
-                     this, &SyringeController::command_model_set_rate);
-
+                     this, &SyringeController::receive_request_set_rate);
     // Model-> Controller
 
     //
     QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_operating_mode_remote()),
-                     this, SLOT(command_view_remote_button_down()));
+                     this, SLOT(receive_state_update_model_operating_mode_remote() ));
 
     QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_operating_mode_remote()),
-                     this, SLOT(command_view_local_button_up()));
+                     this, SLOT(receive_state_update_model_operating_mode_local() ));
 
-    //
-    QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_operating_mode_local()),
-                     this, SLOT(command_view_local_button_down()));
-
-    QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_operating_mode_local()),
-                     this, SLOT(command_view_remote_button_up()));
+\
 
     //
     QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_direction_forward()),
-                     this, SLOT(command_view_forward_button_down()));
-
-    QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_direction_forward()),
-                     this, SLOT(command_view_reverse_button_up()));
-
-    //
-    QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_direction_reverse()),
-                     this, SLOT(command_view_reverse_button_down()));
+                     this, SLOT(receive_state_update_model_direction_forward()));
 
     QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_direction_reverse()),
-                     this, SLOT(command_view_forward_button_up()));
+                     this, SLOT(receive_state_update_model_direction_reverse()));
+
 
     //
     QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_motion_stopped()),
-                     this, SLOT(command_view_stop_button_down()));
+                     this, SLOT(receive_state_update_model_motion_stopped()));
 
-    QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_motion_stopped()),
-                     this, SLOT(command_view_forward_button_up()));
-
-    QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_motion_stopped()),
-                     this, SLOT(command_view_reverse_button_up()));
-
-    //
     QObject::connect(&main_model_->syringe_model(), SIGNAL(state_update_motion_moving()),
-                     this, SLOT(command_view_stop_button_up()));
+                     this, SLOT(receive_state_update_model_motion_moving()));
+
+    //
+
 
     QObject::connect(&main_model_->syringe_model(), &SyringeModel::state_update_rate,
-                     this, &SyringeController::command_view_current_rate_field_change);
+                     this, &SyringeController::receive_state_update_model_rate);
 
 
 
@@ -96,47 +91,48 @@ void SyringeController::setup_connections()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// MODEL COMMANDS
+/// RECEIVE VIEW REQUESTS
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-void SyringeController::command_model_set_local()
+void SyringeController::receive_request_set_local()
 {
     main_model_->syringe_model().syringe_set_local();
     return;
 }
 
-void SyringeController::command_model_set_remote()
+void SyringeController::receive_request_set_remote()
 {
     main_model_->syringe_model().syringe_set_remote();
     return;
 }
 
-void SyringeController::command_model_set_forward()
+void SyringeController::receive_request_set_forward()
 {
     main_model_->syringe_model().syringe_set_forward();
     return;
 }
 
-void SyringeController::command_model_set_stop()
+void SyringeController::receive_request_set_stop()
 {
     main_model_->syringe_model().syringe_set_stop();
     return;
 }
 
-void SyringeController::command_model_set_reverse()
+void SyringeController::receive_request_set_reverse()
 {
     main_model_->syringe_model().syringe_set_reverse();
     return;
 }
 
-void SyringeController::command_model_get_rate()
+void SyringeController::receive_request_get_rate()
 {
     main_model_->syringe_model().syringe_get_rate();
+    receive_state_update_model_rate(main_model_->syringe_model().rate_);
     return;
 }
 
-void SyringeController::command_model_set_rate()
+void SyringeController::receive_request_set_rate()
 {
     // Get the rate from the rate field, convert to Windows encoded string
     std::string rate = main_view_->syringe_set_rate_field_->text().toLocal8Bit().constData();
@@ -144,78 +140,64 @@ void SyringeController::command_model_set_rate()
     return;
 }
 
-void SyringeController::command_model_switch_direction()
+void SyringeController::receive_request_switch_direction()
 {
     main_model_->syringe_model().syringe_switch_direction();
     return;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// VIEW COMMANDS
+/// MODEL STATE UPDATES
 ///////////////////////////////////////////////////////////////////////////////////////
 
-void SyringeController::command_view_local_button_up()
-{
-    main_view_->syringe_local_button_->setEnabled(true);
-    return;
-}
-
-void SyringeController::command_view_local_button_down()
+void SyringeController::receive_state_update_model_operating_mode_local()
 {
     main_view_->syringe_local_button_->setEnabled(false);
-    return;
-}
-
-void SyringeController::command_view_remote_button_up()
-{
     main_view_->syringe_remote_button_->setEnabled(true);
     return;
 }
 
-void SyringeController::command_view_remote_button_down()
+void SyringeController::receive_state_update_model_operating_mode_remote()
 {
+    main_view_->syringe_local_button_->setEnabled(true);
     main_view_->syringe_remote_button_->setEnabled(false);
     return;
 }
 
-void SyringeController::command_view_forward_button_up()
+void SyringeController::receive_state_update_model_direction_forward()
 {
-    main_view_->syringe_forward_button_->setEnabled(true);
-    return;
-}
 
-void SyringeController::command_view_forward_button_down()
-{
+    main_view_->syringe_stop_button_->setEnabled(true);
     main_view_->syringe_forward_button_->setEnabled(false);
-    return;
-}
-
-void SyringeController::command_view_reverse_button_up()
-{
     main_view_->syringe_reverse_button_->setEnabled(true);
     return;
 }
 
-void SyringeController::command_view_reverse_button_down()
+void SyringeController::receive_state_update_model_direction_reverse()
 {
+    main_view_->syringe_stop_button_->setEnabled(true);
+    main_view_->syringe_forward_button_->setEnabled(true);
     main_view_->syringe_reverse_button_->setEnabled(false);
     return;
 }
 
-void SyringeController::command_view_stop_button_up()
+void SyringeController::receive_state_update_model_motion_moving()
 {
     main_view_->syringe_stop_button_->setEnabled(true);
     return;
 }
 
-void SyringeController::command_view_stop_button_down()
+void SyringeController::receive_state_update_model_motion_stopped()
 {
+    main_view_->syringe_forward_button_->setEnabled(true);
+    main_view_->syringe_reverse_button_->setEnabled(true);
     main_view_->syringe_stop_button_->setEnabled(false);
+
     return;
 }
 
-void SyringeController::command_view_current_rate_field_change(double rate)
-{
+void SyringeController::receive_state_update_model_rate(double rate)
+{    
     std::ostringstream strs;
     strs << rate;
     std::string str = strs.str();

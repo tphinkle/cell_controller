@@ -17,8 +17,14 @@ CameraModel::CameraModel()
     image_w_ = 640;
     image_h_ = 480;
     image_size_ = image_w_*image_h_;
+    live_image_buffer_.resize(image_size_);
+    live_image_pointer_ = &live_image_buffer_[0];
 
     tcplayer_.initialize(command_port_, data_port_, camera_ip_, server_ip_);
+
+
+
+    start_data_stream();
 
 }
 
@@ -31,15 +37,20 @@ void CameraModel::start_data_stream()
     return;
 }
 
-void CameraModel::get_live_frame()
+void CameraModel::get_live_image()
 {
+    std::cout << "Trying to get a live image..." << std::endl;
     std::string req = "img {cine:-1, start:-1, cnt:1}\r";
     tcplayer_.send_data_request(req, live_image_buffer_);
+
+    emit(state_update_live_image());
     return;
 }
 
 int CameraModel::get_live_cine_number()
 {
+
+    std::cout << "Trying to get live cine number..." << std::endl;
     std::string result = tcplayer_.send_command("cstats\r");
 
     std::vector<std::string> string_vec = split_string(result, "\n");

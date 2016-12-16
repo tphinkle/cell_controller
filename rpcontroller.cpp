@@ -22,20 +22,48 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
 
 void RPController::setup_connections()
 {
-    QObject::connect(this, RPController::command_set_threshold_multiplier, &main_model_->rp_model(), RPModel::set_threshold_multiplier);
+    // Shared buffers
+    main_view_->rp_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().time_buffer_.front(),\
+                &main_model_->rp_model().data_buffer_.front(),\
+                main_model_->rp_model().data_buffer_.size()\
+                );
+
+    main_view_->rp_baseline_mean_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().baseline_time_buffer_.front(),
+                &main_model_->rp_model().baseline_mean_buffer_.front(),
+                2);
+
+    main_view_->rp_baseline_lower_thresh_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().baseline_time_buffer_.front(),
+                &main_model_->rp_model().baseline_lower_thresh_buffer_.front(),
+                2);
+
+    main_view_->rp_baseline_upper_thresh_plot_curve_->setRawSamples(\
+                &main_model_->rp_model().baseline_time_buffer_.front(),
+                &main_model_->rp_model().baseline_upper_thresh_buffer_.front(),
+                2);
+
+
+    // View requests
+    QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()),\
+                     this, SLOT(receive_request_view_start_main_loop()));
+
+
+    // Timers
+    QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()), rp_plot_timer_, SLOT(start()));
+    QObject::connect(rp_plot_timer_, SIGNAL(timeout()), main_view_->rp_plot_, SLOT(replot()));
+    QObject::connect(rp_plot_timer_, SIGNAL(timeout()), this->rp_plot_timer_, SLOT(start()));
+
+
+
+
     return;
 }
 
-void RPController::request_change_threshold_multiplier()
-{
-    std::cout << "Trying to change the threshold multiplier." << std::endl;
-    double value = main_view_->rp_threshold_multiplier_field_->text().toDouble();
-    emit command_set_threshold_multiplier(value);
-    return;
-}
 
 
-void RPController::start_main_loop()
+void RPController::receive_request_view_start_main_loop()
 {
     QThread* rp_thread = new QThread();
     RPThreadController* rp_thread_controller = new RPThreadController(\
@@ -52,9 +80,6 @@ void RPController::start_main_loop()
 
     // Connect start thread to start main loop
     connect(rp_thread, SIGNAL(started()), &main_model_->rp_model(), SLOT(start_main_loop()));
-
-
-    QObject::connect(this, RPController::command_set_threshold_multiplier, &main_model_->rp_model(), RPModel::set_threshold_multiplier, Qt::QueuedConnection);
 
     // Connect end main loop to stop thread
     connect(main_view_->rp_stop_button_, SIGNAL(clicked()), rp_thread_controller, SLOT(stop_run()));

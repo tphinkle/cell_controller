@@ -18,6 +18,15 @@ class CameraModel : public QObject
 public:
     CameraModel();
 
+    uchar* live_image_pointer_;
+    std::vector<uchar> live_image_buffer_;
+
+public slots:
+    void get_live_image();
+
+signals:
+    void state_update_live_image();
+
 
 private:
     //////////
@@ -39,16 +48,16 @@ private:
 
 
     // Data stuff
-    std::vector<char> live_image_buffer_;
-    char* live_image_pointer_;
+
+
 
     /////////////
     // Functions
     /////////////
 
     void start_data_stream();
-    void get_live_frame();
     int get_live_cine_number();
+
 
     // Misc. functions
     std::vector<std::string> split_string(std::string str, std::string split_str);

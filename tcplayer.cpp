@@ -211,17 +211,23 @@ std::string TCPLayer::send_command(std::string command)
 
 }
 
-void TCPLayer::send_data_request(std::string request, std::vector<char>& data_buffer)
+void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_buffer)
 {
     send_command(request);
+
+
 
     static bool listen_set = false;
     if(listen_set == false)
     {
         data_socket_ = INVALID_SOCKET;
+
         data_socket_ = accept(listen_socket_, NULL, NULL);
+
         listen_set = true;
     }
+
+
 
     set_data_socket_blocking(true);
 
@@ -230,7 +236,12 @@ void TCPLayer::send_data_request(std::string request, std::vector<char>& data_bu
 
     int bytes_returned;
 
+
+
     set_data_socket_blocking(false);
+
+
+
 
 
     while(data_buffer_iter < data_buffer.size())
@@ -247,6 +258,8 @@ void TCPLayer::send_data_request(std::string request, std::vector<char>& data_bu
 
 
     }
+
+
 
     set_data_socket_blocking(true);
 

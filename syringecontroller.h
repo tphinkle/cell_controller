@@ -20,29 +20,28 @@ public:
 
     void setup_connections();
 
+    QThread* syringe_thread_;
+
 public slots:
     // Model commands
-    void command_model_set_local();
-    void command_model_set_remote();
-    void command_model_set_forward();
-    void command_model_set_stop();
-    void command_model_set_reverse();
-    void command_model_switch_direction();
-    void command_model_get_rate();
-    void command_model_set_rate();
+    void receive_request_set_local();
+    void receive_request_set_remote();
+    void receive_request_set_forward();
+    void receive_request_set_stop();
+    void receive_request_set_reverse();
+    void receive_request_switch_direction();
+    void receive_request_get_rate();
+    void receive_request_set_rate();
 
     // View commands
-    void command_view_local_button_up();
-    void command_view_local_button_down();
-    void command_view_remote_button_up();
-    void command_view_remote_button_down();
-    void command_view_forward_button_up();
-    void command_view_forward_button_down();
-    void command_view_reverse_button_up();
-    void command_view_reverse_button_down();
-    void command_view_stop_button_up();
-    void command_view_stop_button_down();
-    void command_view_current_rate_field_change(double rate);
+    void receive_state_update_model_operating_mode_local();
+    void receive_state_update_model_operating_mode_remote();
+    void receive_state_update_model_direction_forward();
+    void receive_state_update_model_direction_reverse();
+    void receive_state_update_model_motion_moving();
+    void receive_state_update_model_motion_stopped();
+    void receive_state_update_model_rate(double rate);
+
 
 
 private:

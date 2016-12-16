@@ -2,19 +2,38 @@
 #define CAMERACONTROLLER_H
 
 // Program specific
+#include "mainmodel.h"
+#include "mainview.h"
 
 // Qt
 #include <QTimer>
 
-class CameraController
+class CameraController : public QObject
 {
+    Q_OBJECT
 public:
-    CameraController();
+    CameraController(MainModel* main_model, MainView* main_view);
+
+    MainModel* main_model_;
+    MainView* main_view_;
+
+    QThread* camera_thread_;
 
     void setup_connections();
 
     int camera_display_period_;
     QTimer* camera_display_timer_;
+
+public slots:
+    void receive_request_get_live_image();
+    void receive_state_update_model_live_image();
+
+
+signals:
+    void command_model_get_live_image();
+
+
+
 
 };
 
