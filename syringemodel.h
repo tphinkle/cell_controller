@@ -36,7 +36,7 @@ public:
     // Syringe methods
     void syringe_set_local();
     void syringe_set_remote();
-    void syringe_set_forward();
+
     void syringe_set_stop();
     void syringe_set_reverse();
     void syringe_switch_direction();
@@ -48,6 +48,9 @@ public:
     void set_operating_mode(OperatingMode operating_mode);
     void set_motion(Motion motion);
     void set_direction(Direction direction);
+
+public slots:
+    void syringe_set_forward();
 
 private:
 

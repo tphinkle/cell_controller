@@ -42,6 +42,21 @@ public slots:
     void receive_state_update_model_motion_stopped();
     void receive_state_update_model_rate(double rate);
 
+    // Syringe commands
+
+signals:
+    void command_syringe_set_local();
+    void command_syringe_set_remote();
+
+    void command_syringe_set_forward();
+    void command_syringe_set_stop();
+    void command_syringe_set_reverse();
+
+    void command_syringe_switch_direction();
+
+    void command_syringe_get_rate();
+    void command_syringe_set_rate(std::string rate);
+
 
 
 private:

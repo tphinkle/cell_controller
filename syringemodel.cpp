@@ -100,7 +100,8 @@ void SyringeModel::syringe_get_rate()
     if(N > 9)
     {
         std::string parsed_result = result.substr(N-9, 5);
-        set_rate(std::stod(parsed_result));
+        std::cout << "parsed result " << std::endl << parsed_result << std::endl;
+        //set_rate(std::stod(parsed_result));
     }
     return;
 }
@@ -194,6 +195,7 @@ void SyringeModel::set_direction(Direction direction)
 
 void SyringeModel::set_rate(double rate)
 {
+    std::cout << "setting rate internally and alerting of state change" << std::endl;
     rate_ = rate;
     emit(state_update_rate(rate));
 

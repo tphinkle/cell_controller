@@ -14,9 +14,12 @@ CameraModel::CameraModel()
     camera_ip_ = "100.100.37.9";
     server_ip_ = "100.100.100.1";
 
-    image_w_ = 640;
-    image_h_ = 480;
-    image_size_ = image_w_*image_h_;
+    res_x_ = 640;
+    res_y_ = 480;
+    frame_rate_ = 10000;
+    exposure_time_ = 10000;
+
+    image_size_ = res_x_*res_y_;
     live_image_buffer_.resize(image_size_);
     live_image_pointer_ = &live_image_buffer_[0];
 
@@ -43,7 +46,12 @@ void CameraModel::get_live_image()
     std::string req = "img {cine:-1, start:-1, cnt:1}\r";
     tcplayer_.send_data_request(req, live_image_buffer_);
 
-    emit(state_update_live_image());
+    std::cout << "Trying to emit the signal" << std::endl;
+
+    emit(state_update_live_image(res_x_, res_y_));
+
+    std::cout << "Emit the signal" << std::endl;
+
     return;
 }
 
@@ -66,6 +74,28 @@ int CameraModel::get_live_cine_number()
     return -1;
 }
 
+void CameraModel::set_parameters(int frame_rate, int exposure_time, int res_x, int res_y)
+{
+    frame_rate_ = frame_rate;
+    exposure_time_ = exposure_time;
+    res_x_ = res_x;
+    res_y_ = res_y;
+    live_image_buffer_.resize(res_x_*res_y_);
+    live_image_pointer_ = &live_image_buffer_[0];
+
+    std::string cmd = "set defc.* {";
+    cmd += "res:" + std::to_string(res_x) + "x" + std::to_string(res_y)+", ";
+    cmd += "rate:" + std::to_string(frame_rate)+", ";
+    cmd += "exp:" + std::to_string(exposure_time)+"}\r";
+
+    std::cout << "Parameter command: " << cmd << std::endl;
+
+
+    tcplayer_.send_command(cmd);
+
+
+    return;
+}
 
 
 std::vector<std::string> CameraModel::split_string(std::string str, std::string split_str)

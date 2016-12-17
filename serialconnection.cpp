@@ -5,6 +5,8 @@
 #include <string>
 
 
+
+
 SerialConnection::SerialConnection()
 {
     // Serial instructions in windows found at stackoverflow.com/questions/15794422/serial-port-rs-232-connection-in-c
@@ -61,6 +63,8 @@ std::string SerialConnection::write(std::string cmd)
     char cmd_buf[cmd.size()];
     strcpy(cmd_buf, cmd.c_str());
 
+    PurgeComm(serial_handle_, PURGE_RXCLEAR);  // Maybe have to remove this
+
     bool return_value = WriteFile(serial_handle_, &cmd_buf, cmd.size(), &bytes_written, NULL);
 
     return read();
@@ -72,6 +76,8 @@ std::string SerialConnection::write_data_request(std::string cmd)
 
     char cmd_buf[cmd.size()];
     strcpy(cmd_buf, cmd.c_str());
+
+    PurgeComm(serial_handle_, PURGE_RXCLEAR);  // Maybe have to remove this
 
     bool return_value = WriteFile(serial_handle_, &cmd_buf, cmd.size(), &bytes_written, NULL);
     return read_data();
@@ -134,6 +140,15 @@ std::string SerialConnection::read_data()
     {
         ReadFile(serial_handle_, &buf, sizeof(buf), &bytes_read, NULL);
     } while(bytes_read > 0);
+
+    ///////////////
+    //////////////
+    /// ////////////
+    ///
+    /// ///////////
+    ///
+    ///
+    /// FIX THE WAY THIS PARSES THE RETURN CHARACTERS!
 
     std::string read_value = std::string(buf);
     std::string return_value;

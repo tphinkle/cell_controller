@@ -26,11 +26,14 @@ public:
 
 public slots:
     void receive_request_get_live_image();
-    void receive_state_update_model_live_image();
+    void receive_request_set_parameters();
+    void receive_state_update_model_live_image(int res_x, int res_y);
+
 
 
 signals:
     void command_model_get_live_image();
+    void command_model_set_parameters(int frame_rate, int exposure_time, int res_x, int res_y);
 
 
 

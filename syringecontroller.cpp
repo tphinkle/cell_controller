@@ -14,11 +14,10 @@ SyringeController::SyringeController(MainModel* main_model, MainView* main_view)
     main_view_ = main_view;
 
 
+
+
     syringe_thread_ = new QThread();
     main_model_->syringe_model().moveToThread(syringe_thread_);
-
-    setup_connections();
-
 
 
     syringe_thread_->start();
@@ -84,6 +83,31 @@ void SyringeController::setup_connections()
 
 
 
+    // Command connections
+
+    QObject::connect(this, &SyringeController::command_syringe_set_local,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_set_local);
+
+    QObject::connect(this, &SyringeController::command_syringe_set_remote,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_set_remote);
+
+    QObject::connect(this, &SyringeController::command_syringe_set_forward,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_set_forward);
+
+    QObject::connect(this, &SyringeController::command_syringe_set_stop,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_set_stop);
+
+    QObject::connect(this, &SyringeController::command_syringe_set_reverse,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_set_reverse);
+
+    QObject::connect(this, &SyringeController::command_syringe_switch_direction,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_switch_direction);
+
+    QObject::connect(this, &SyringeController::command_syringe_get_rate,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_get_rate);
+
+    QObject::connect(this, &SyringeController::command_syringe_set_rate,
+                     &main_model_->syringe_model(), &SyringeModel::syringe_set_rate);
 
 
 
@@ -97,38 +121,38 @@ void SyringeController::setup_connections()
 
 void SyringeController::receive_request_set_local()
 {
-    main_model_->syringe_model().syringe_set_local();
+    emit command_syringe_set_local();
     return;
 }
 
 void SyringeController::receive_request_set_remote()
 {
-    main_model_->syringe_model().syringe_set_remote();
+    emit command_syringe_set_remote();
     return;
 }
 
 void SyringeController::receive_request_set_forward()
 {
-    main_model_->syringe_model().syringe_set_forward();
+    emit(command_syringe_set_forward());
     return;
 }
 
 void SyringeController::receive_request_set_stop()
 {
-    main_model_->syringe_model().syringe_set_stop();
+    emit command_syringe_set_stop();
     return;
 }
 
 void SyringeController::receive_request_set_reverse()
 {
-    main_model_->syringe_model().syringe_set_reverse();
+    emit command_syringe_set_reverse();
     return;
 }
 
 void SyringeController::receive_request_get_rate()
 {
-    main_model_->syringe_model().syringe_get_rate();
-    receive_state_update_model_rate(main_model_->syringe_model().rate_);
+    std::cout << "???" << std::endl;
+    emit command_syringe_get_rate();
     return;
 }
 
@@ -136,13 +160,13 @@ void SyringeController::receive_request_set_rate()
 {
     // Get the rate from the rate field, convert to Windows encoded string
     std::string rate = main_view_->syringe_set_rate_field_->text().toLocal8Bit().constData();
-    main_model_->syringe_model().syringe_set_rate(rate);
+    emit command_syringe_set_rate(rate);
     return;
 }
 
 void SyringeController::receive_request_switch_direction()
 {
-    main_model_->syringe_model().syringe_switch_direction();
+    emit command_syringe_switch_direction();
     return;
 }
 

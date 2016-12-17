@@ -123,10 +123,32 @@ void MainView::setup_camera_view()
     camera_view_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     camera_view_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+    // ComboBox
+    camera_resolution_combo_box_ = new QComboBox(this);
+    camera_resolution_combo_box_->addItem("640x480");
+    camera_resolution_combo_box_->addItem("320x240");
 
     // Label
     camera_control_label_ = new QLabel("Camera Controls", this);
     camera_control_label_->setFont(*major_label_font_);
+
+    camera_resolution_label_ = new QLabel("Resolution", this);
+    camera_resolution_label_->setFont(*minor_label_font_);
+
+    camera_frame_rate_label_ = new QLabel("Frame rate (S/s)", this);
+    camera_frame_rate_label_->setFont(*minor_label_font_);
+
+    camera_exposure_time_label_ = new QLabel("Exposure time (ns)", this);
+    camera_exposure_time_label_->setFont(*minor_label_font_);
+
+    // Fields
+    camera_frame_rate_field_ = new QLineEdit("", this);
+    camera_frame_rate_field_->setFont(*minor_label_font_);
+    camera_frame_rate_field_->setText("1000");
+
+    camera_exposure_time_field_ = new QLineEdit("", this);
+    camera_exposure_time_field_->setFont(*minor_label_font_);
+    camera_exposure_time_field_->setText("20000");
 
     // Buttons
     camera_start_button_ = new QPushButton("Start camera", this);
@@ -135,6 +157,15 @@ void MainView::setup_camera_view()
 
     camera_stop_button_ = new QPushButton("Stop camera", this);
     camera_stop_button_->setFont(*button_font_);
+
+    camera_set_frame_rate_button_ = new QPushButton("Set", this);
+    camera_set_frame_rate_button_->setFont(*button_font_);
+
+    camera_set_exposure_time_button_ = new QPushButton("Set", this);
+    camera_set_exposure_time_button_->setFont(*button_font_);
+
+    camera_set_parameters_button_ = new QPushButton("Set parameters", this);
+    camera_set_parameters_button_->setFont(*button_font_);
 
 
 
@@ -210,16 +241,16 @@ void MainView::setup_layout()
     QWidget* main_widget = new QWidget();
     QWidget* syringe_widget = new QWidget();
     QWidget* plot_widget = new QWidget();
-    QWidget* controls_widget = new QWidget();
-    QWidget* stats_widget = new QWidget();
+    QWidget* rp_controls_widget = new QWidget();
+    QWidget* camera_controls_widget = new QWidget();
 
     setCentralWidget(main_widget);
 
     QVBoxLayout* main_layout = new QVBoxLayout(main_widget);
     main_layout->addWidget(syringe_widget);
     main_layout->addWidget(plot_widget);
-    main_layout->addWidget(controls_widget);
-    main_layout->addWidget(stats_widget);
+    main_layout->addWidget(rp_controls_widget);
+    main_layout->addWidget(camera_controls_widget);
 
 
 
@@ -248,22 +279,35 @@ void MainView::setup_layout()
 
 
 
-    QHBoxLayout* controls_layout = new QHBoxLayout(controls_widget);
-    controls_layout->addWidget(rp_control_label_);
-    controls_layout->addWidget(rp_start_button_);
-    controls_layout->addWidget(rp_stop_button_);
-    controls_layout->addWidget(rp_set_threshold_multiplier_button_);
-    controls_layout->addWidget(rp_threshold_multiplier_field_);
-    controls_layout->addWidget(rp_control_syringe_checkbox_);
-    controls_layout->addWidget(rp_control_camera_checkbox_);
-    controls_layout->addWidget(camera_control_label_);
-    controls_layout->addWidget(camera_start_button_);
-    controls_layout->addWidget(camera_stop_button_);
+    QHBoxLayout* rp_controls_layout = new QHBoxLayout(rp_controls_widget);
+    rp_controls_layout->addWidget(rp_control_label_);
+    rp_controls_layout->addWidget(rp_start_button_);
+    rp_controls_layout->addWidget(rp_stop_button_);
+    rp_controls_layout->addWidget(rp_set_threshold_multiplier_button_);
+    rp_controls_layout->addWidget(rp_threshold_multiplier_field_);
+    rp_controls_layout->addWidget(rp_control_syringe_checkbox_);
+    rp_controls_layout->addWidget(rp_control_camera_checkbox_);
 
 
 
-    QHBoxLayout* stats_layout = new QHBoxLayout(stats_widget);
-    stats_layout->addWidget(new QPushButton("Random stats button!"));
+
+    QHBoxLayout* camera_controls_layout = new QHBoxLayout(camera_controls_widget);
+    camera_controls_layout->addWidget(camera_control_label_);
+    camera_controls_layout->addWidget(camera_start_button_);
+    camera_controls_layout->addWidget(camera_stop_button_);
+    camera_controls_layout->addWidget(camera_resolution_label_);
+    camera_controls_layout->addWidget(camera_resolution_combo_box_);
+
+    camera_controls_layout->addWidget(camera_frame_rate_label_);
+    camera_controls_layout->addWidget(camera_frame_rate_field_);
+    camera_controls_layout->addWidget(camera_set_frame_rate_button_);
+
+    camera_controls_layout->addWidget(camera_exposure_time_label_);
+    camera_controls_layout->addWidget(camera_exposure_time_field_);
+    camera_controls_layout->addWidget(camera_set_exposure_time_button_);
+
+    camera_controls_layout->addWidget(camera_set_parameters_button_);
+
 
 
 

@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFont>
+#include <QComboBox>
 
 
 // Qwt
@@ -121,10 +122,27 @@ public:
 
     // Label
     QLabel* camera_control_label_;
+    QLabel* camera_resolution_label_;
+    QLabel* camera_frame_rate_label_;
+    QLabel* camera_exposure_time_label_;
+
+    // ComboBox
+    QComboBox* camera_resolution_combo_box_;
+
+    // Fields
+    QLineEdit* camera_frame_rate_field_;
+    QLineEdit* camera_exposure_time_field_;
 
     // Buttons
+    QPushButton* camera_record_cine_button_;
+
     QPushButton* camera_start_button_;
     QPushButton* camera_stop_button_;
+
+    QPushButton* camera_set_frame_rate_button_;
+    QPushButton* camera_set_exposure_time_button_;
+
+    QPushButton* camera_set_parameters_button_;
 
     // Plot
     QGraphicsScene* camera_scene_;
