@@ -106,8 +106,9 @@ void SyringeController::setup_connections()
     QObject::connect(this, &SyringeController::command_syringe_get_rate,
                      &main_model_->syringe_model(), &SyringeModel::syringe_get_rate);
 
-    QObject::connect(this, &SyringeController::command_syringe_set_rate,
-                     &main_model_->syringe_model(), &SyringeModel::syringe_set_rate);
+
+    QObject::connect(this, SIGNAL(command_syringe_set_rate(QString)),
+                     &main_model_->syringe_model(), SLOT(syringe_set_rate(QString)));
 
 
 
@@ -151,7 +152,6 @@ void SyringeController::receive_request_set_reverse()
 
 void SyringeController::receive_request_get_rate()
 {
-    std::cout << "???" << std::endl;
     emit command_syringe_get_rate();
     return;
 }
@@ -160,7 +160,7 @@ void SyringeController::receive_request_set_rate()
 {
     // Get the rate from the rate field, convert to Windows encoded string
     std::string rate = main_view_->syringe_set_rate_field_->text().toLocal8Bit().constData();
-    emit command_syringe_set_rate(rate);
+    emit command_syringe_set_rate(QString::fromStdString(rate));
     return;
 }
 

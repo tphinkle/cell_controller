@@ -34,16 +34,6 @@ public:
 
 
     // Syringe methods
-    void syringe_set_local();
-    void syringe_set_remote();
-
-    void syringe_set_stop();
-    void syringe_set_reverse();
-    void syringe_switch_direction();
-    void syringe_run();
-    void syringe_set_rate(std::string rate);
-    void syringe_get_rate();
-
     void set_rate(double rate);
     void set_operating_mode(OperatingMode operating_mode);
     void set_motion(Motion motion);
@@ -51,6 +41,15 @@ public:
 
 public slots:
     void syringe_set_forward();
+    void syringe_set_local();
+    void syringe_set_remote();
+
+    void syringe_set_stop();
+    void syringe_set_reverse();
+    void syringe_switch_direction();
+    void syringe_run();
+    void syringe_set_rate(QString rate);
+    void syringe_get_rate();
 
 private:
 

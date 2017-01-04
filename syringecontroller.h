@@ -55,7 +55,7 @@ signals:
     void command_syringe_switch_direction();
 
     void command_syringe_get_rate();
-    void command_syringe_set_rate(std::string rate);
+    void command_syringe_set_rate(QString rate);
 
 
 

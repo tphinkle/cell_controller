@@ -1,8 +1,12 @@
+// Program specific
 #include "serialconnection.h"
 
-#include <iostream>
 
+// Standard library
+#include <iostream>
 #include <string>
+#include <vector>
+#include <algorithm>      // Needed for std::find
 
 
 
@@ -128,50 +132,40 @@ std::string SerialConnection::read()
 
 std::string SerialConnection::read_data()
 {
-    int len = 100;
-    char buf[100];
 
-    DWORD bytes_read;
+    std::vector<unsigned char> buf(100);
+
+    DWORD bytes_read = 0;
+    DWORD total_bytes_read = 0;
 
 
+    PurgeComm(serial_handle_, PURGE_RXABORT); // Purge input buffer before reading
     PurgeComm(serial_handle_, PURGE_RXCLEAR); // Purge input buffer before reading
 
-    do
+
+    do // Read all bytes
     {
-        ReadFile(serial_handle_, &buf, sizeof(buf), &bytes_read, NULL);
+        ReadFile(serial_handle_, &buf[bytes_read], sizeof(buf), &bytes_read, NULL);
+        total_bytes_read = total_bytes_read + bytes_read;
+        //std::cout << "read result = " << std::string(buf.begin(), buf.end()) << std::endl;
+        //std::cout << "bytes read " << bytes_read << std::endl;
     } while(bytes_read > 0);
 
-    ///////////////
-    //////////////
-    /// ////////////
-    ///
-    /// ///////////
-    ///
-    ///
-    /// FIX THE WAY THIS PARSES THE RETURN CHARACTERS!
 
-    std::string read_value = std::string(buf);
-    std::string return_value;
-
-    for(size_t i = 0; i < read_value.size(); i++)
+    // Find where the colon/</> is, which indicates where the syringe rate can be found within the string
+    unsigned int colon_index;
+    for(unsigned int i = 0; i < buf.size(); i++)
     {
-        if (read_value[i] == '<')
+        if((buf[i] == ":"[0]) || (buf[i] == "<"[0]) || (buf[i] == ">"[0]))
         {
-            return_value += '<';
+            colon_index = i;
+            break;
         }
 
-        else if (read_value[i] == '>')
-        {
-            return_value += '>';
-        }
-
-        else if (read_value[i] == ':')
-        {
-            return_value += ':';
-        }
     }
 
 
+    std::string read_value(buf.begin()+colon_index - 5, buf.begin() + colon_index);
     return read_value;
 
 }

@@ -93,25 +93,16 @@ void SyringeModel::syringe_run()
 void SyringeModel::syringe_get_rate()
 {
     std::string result = serial_connection_.write_data_request("RAT\r");
-    int N = result.length();
-    std::cout << "result = " << result << std::endl;
+    set_rate(std::stod(result));
 
-    // Check string to make sure it is of appropriate length
-    if(N > 9)
-    {
-        std::string parsed_result = result.substr(N-9, 5);
-        std::cout << "parsed result " << std::endl << parsed_result << std::endl;
-        //set_rate(std::stod(parsed_result));
-    }
     return;
 }
 
-void SyringeModel::syringe_set_rate(std::string rate)
+void SyringeModel::syringe_set_rate(QString rate)
 {
-    std::string result = serial_connection_.write("MLM"+rate+"\r");
+    std::string result = serial_connection_.write("MLM"+rate.toStdString()+"\r");
 
     syringe_get_rate();
-
 
     return;
 }
@@ -195,7 +186,6 @@ void SyringeModel::set_direction(Direction direction)
 
 void SyringeModel::set_rate(double rate)
 {
-    std::cout << "setting rate internally and alerting of state change" << std::endl;
     rate_ = rate;
     emit(state_update_rate(rate));
 
