@@ -49,6 +49,12 @@ void RPController::setup_connections()
     QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()),\
                      this, SLOT(receive_request_view_start_main_loop()));
 
+    QObject::connect(main_view_->rp_increase_scale_button_, SIGNAL(clicked()),
+                     this, SLOT(increase_main_plot_range()));
+
+    QObject::connect(main_view_->rp_decrease_scale_button_, SIGNAL(clicked()),
+                     this, SLOT(decrease_main_plot_range()));
+
 
     // Timers
     QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()), rp_plot_timer_, SLOT(start()));
@@ -101,5 +107,37 @@ void RPController::receive_request_view_start_main_loop()
     rp_thread->start();
 
 
+    return;
+}
+
+void RPController::increase_main_plot_range()
+{
+    QwtInterval axis_interval = main_view_->rp_plot_->axisInterval(0);
+    float old_range = axis_interval.maxValue() - axis_interval.minValue();
+    float new_range = 1.5*old_range;
+
+    float new_y_lower = (axis_interval.maxValue()+axis_interval.minValue())/2. - new_range/2.;
+    float new_y_upper = (axis_interval.maxValue()+axis_interval.minValue())/2. + new_range/2.;
+
+    std::cout << "old limits" << axis_interval.minValue() << "\t\t\t" << axis_interval.maxValue() << std::endl;
+
+    std::cout << new_y_lower << "\t\t\t" << new_y_upper << std::endl;
+
+    main_view_->rp_plot_->setAxisScale(QwtPlot::yLeft, new_y_lower, new_y_upper);
+    return;
+}
+
+void RPController::decrease_main_plot_range()
+{
+    QwtInterval axis_interval = main_view_->rp_plot_->axisInterval(0);
+    float old_range = axis_interval.maxValue() - axis_interval.minValue();
+    float new_range = 0.5*old_range;
+
+    float new_y_lower = (axis_interval.maxValue()+axis_interval.minValue())/2 - new_range/2.;
+    float new_y_upper = (axis_interval.maxValue()+axis_interval.minValue())/2 + new_range/2.;
+
+    std::cout << new_y_lower << "\t\t\t" << new_y_upper << std::endl;
+
+    main_view_->rp_plot_->setAxisScale(QwtPlot::yLeft, new_y_lower, new_y_upper);
     return;
 }

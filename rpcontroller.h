@@ -23,6 +23,9 @@ public:
 
 public slots:
     void receive_request_view_start_main_loop();
+    void increase_main_plot_range();
+    void decrease_main_plot_range();
+
 
 
 signals:

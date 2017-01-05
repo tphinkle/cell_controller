@@ -58,6 +58,15 @@ void MainView::setup_rp_view()
     rp_plot_curve_ = new QwtPlotCurve(QwtText("RP Data"));
     rp_plot_curve_->attach(rp_plot_);
 
+    rp_plot_panner_ = new QwtPlotPanner(rp_plot_->canvas());
+    rp_plot_panner_->setAxisEnabled(QwtPlot::yLeft, true);
+    rp_plot_panner_->setAxisEnabled(QwtPlot::xBottom, false);
+
+    rp_plot_magnifier_ = new QwtPlotMagnifier(rp_plot_->canvas());
+    rp_plot_magnifier_->setAxisEnabled(QwtPlot::yLeft, true);
+    rp_plot_magnifier_->setAxisEnabled(QwtPlot::xBottom, false);
+
+
 
     rp_baseline_mean_plot_curve_ = new QwtPlotCurve(QwtText("Baseline mean"));
     rp_baseline_mean_plot_curve_->setPen(* new QPen(Qt::red));
@@ -75,12 +84,25 @@ void MainView::setup_rp_view()
     rp_plot_->setAxisTitle(QwtPlot::yLeft, "Current (xA)");
 
 
-    rp_plot_->setAxisAutoScale(0, true);
+    //rp_plot_->setAxisAutoScale(0, true);
     rp_plot_->setAxisAutoScale(QwtPlot::yLeft, true);
+    rp_plot_->axisScaleEngine(QwtPlot::xBottom)->setAttribute(QwtScaleEngine::Floating, true); // For auto scaling if I < 0
 
-    rp_plot_->setAxisScale(QwtPlot::yLeft, -0.01, 0.01);
+    //rp_plot_->setAxisScale(QwtPlot::yLeft, -0.01, 0.01); // Manual axis
 
     // Buttons
+
+    rp_increase_scale_button_ = new QPushButton("^", this);
+    rp_increase_scale_button_->setFont(*button_font_);
+
+
+    rp_decrease_scale_button_ = new QPushButton("v", this);
+    rp_decrease_scale_button_->setFont(*button_font_);
+
+
+    rp_increase_scale_button_->setGeometry(20, 150, 25, 25);
+    rp_decrease_scale_button_->setGeometry(20, 150+25, 25, 25);
+
 
     rp_start_button_ = new QPushButton("Start RP", this);
     rp_start_button_->setFont(*button_font_);
@@ -275,6 +297,10 @@ void MainView::setup_layout()
     QHBoxLayout* plot_layout = new QHBoxLayout(plot_widget);
     plot_layout->addWidget(rp_plot_);
     plot_layout->addWidget(camera_view_);
+
+    rp_increase_scale_button_->raise();
+    rp_decrease_scale_button_->raise();
+
 
 
 

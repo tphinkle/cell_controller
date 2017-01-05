@@ -200,13 +200,13 @@ void TCPLayer::set_data_socket_blocking(bool blocking)
 
 std::string TCPLayer::send_command(std::string command)
 {
-    std::cout << "Trying to send command: " << std::endl << "\t" << command << std::endl;
+    //std::cout << "Trying to send command: " << std::endl << "\t" << command << std::endl;
 
     send(command_socket_, command.c_str(), command.length(), NULL);
 
     char recv_buffer[10000];
     recv(command_socket_, recv_buffer, sizeof(recv_buffer), NULL);
-    std::cout << std::string(recv_buffer) << std::endl;
+    //std::cout << std::string(recv_buffer) << std::endl;
     return std::string(recv_buffer);
 
 }

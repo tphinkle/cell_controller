@@ -9,7 +9,7 @@ CameraController::CameraController(MainModel* main_model, MainView* main_view)
     main_model_ = main_model;
     main_view_ = main_view;
 
-    camera_display_period_ = (1000./60);
+    camera_display_period_ = (1000./30);
     camera_display_timer_ = new QTimer();
     camera_display_timer_->setInterval(camera_display_period_);
 
@@ -94,8 +94,6 @@ void CameraController::receive_request_set_parameters()
 
 void CameraController::receive_state_update_model_live_image(int res_x, int res_y)
 {
-    std::cout << "New live image" << std::endl;
-
     QImage img(main_model_->camera_model().live_image_pointer_, res_x, res_y, QImage::Format_Indexed8);
     main_view_->camera_scene_->clear();
     QPixmap pixmap = QPixmap::fromImage(img);

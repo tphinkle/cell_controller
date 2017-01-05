@@ -21,6 +21,10 @@
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_text.h>
+#include <qwt_scale_engine.h>
+#include <qwt_interval.h>
+#include <qwt_plot_panner.h>
+#include  <qwt_plot_magnifier.h>
 
 
 
@@ -102,12 +106,16 @@ public:
     QwtPlotCurve* rp_baseline_mean_plot_curve_;
     QwtPlotCurve* rp_baseline_lower_thresh_plot_curve_;
     QwtPlotCurve* rp_baseline_upper_thresh_plot_curve_;
+    QwtPlotPanner* rp_plot_panner_;
+    QwtPlotMagnifier* rp_plot_magnifier_;
 
 
     // Fields
     QLineEdit* rp_threshold_multiplier_field_;
 
     // Buttons
+    QPushButton* rp_increase_scale_button_;
+    QPushButton* rp_decrease_scale_button_;
     QPushButton* rp_start_button_;
     QPushButton* rp_stop_button_;
     QPushButton* rp_set_threshold_multiplier_button_;

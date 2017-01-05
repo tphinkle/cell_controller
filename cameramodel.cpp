@@ -42,15 +42,15 @@ void CameraModel::start_data_stream()
 
 void CameraModel::get_live_image()
 {
-    std::cout << "Trying to get a live image..." << std::endl;
+    //std::cout << "Trying to get a live image..." << std::endl;
     std::string req = "img {cine:-1, start:-1, cnt:1}\r";
     tcplayer_.send_data_request(req, live_image_buffer_);
 
-    std::cout << "Trying to emit the signal" << std::endl;
+    //std::cout << "Trying to emit the signal" << std::endl;
 
     emit(state_update_live_image(res_x_, res_y_));
 
-    std::cout << "Emit the signal" << std::endl;
+    //std::cout << "Emit the signal" << std::endl;
 
     return;
 }
@@ -58,7 +58,7 @@ void CameraModel::get_live_image()
 int CameraModel::get_live_cine_number()
 {
 
-    std::cout << "Trying to get live cine number..." << std::endl;
+    //std::cout << "Trying to get live cine number..." << std::endl;
     std::string result = tcplayer_.send_command("cstats\r");
 
     std::vector<std::string> string_vec = split_string(result, "\n");

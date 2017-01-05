@@ -189,7 +189,6 @@ void RPModel::process_buffer()
         if(looking_for_event_start_)
         {
             //std::cout << "1" << std::endl;
-            //std::cout << "i = " << i_ << std::endl;
             look_for_event_start();
         }
 
@@ -222,7 +221,7 @@ void RPModel::look_for_event_start()
     (data_buffer_[i_] < baseline_.lower_thresh_))
     {
 
-        std::cout << "Event start found!" << std::endl;
+        std::cout << "Event start found! 0" << std::endl;
 
         // Update baseline to be sure point is still outside of range
         int index = i_ - baseline_length_;
@@ -241,6 +240,7 @@ void RPModel::look_for_event_start()
         if((data_buffer_[i_] > baseline_.upper_thresh_) || \
                 (data_buffer_[i_] < baseline_.lower_thresh_))
         {
+            std::cout << "Event start found! 1" << std::endl;
             looking_for_event_start_ = false;
             looking_for_event_stop_ = true;
 
@@ -248,9 +248,6 @@ void RPModel::look_for_event_start()
 
 
     }
-
-
-
 
 
     increment_i();
@@ -266,9 +263,6 @@ void RPModel::look_for_event_stop()
     if((data_buffer_[i_] <= baseline_.upper_thresh_) & \
         (data_buffer_[i_] >= baseline_.lower_thresh_))
     {
-
-
-
         // Emit event stop found
         // Stop recording RP
         // Stop recording camera...?
