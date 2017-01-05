@@ -26,10 +26,10 @@ SOURCES += main.cpp\
     rpmodel.cpp \
     rpcontroller.cpp \
     serialconnection.cpp \
-    rpthreadcontroller.cpp \
     cameracontroller.cpp \
     cameramodel.cpp \
-    tcplayer.cpp
+    tcplayer.cpp \
+    rpthreadcontroller.cpp
 
 HEADERS  += \
     syringecontroller.h \
@@ -41,10 +41,10 @@ HEADERS  += \
     rpcontroller.h \
     serialconnection.h \
     "C:\Program Files\National Instruments\NI-DAQ\DAQmx ANSI C Dev\include\NIDAQmx.h" \
-    rpthreadcontroller.h \
     cameracontroller.h \
     cameramodel.h \
-    tcplayer.h
+    tcplayer.h \
+    rpthreadcontroller.h
 
 FORMS    += \
     mainview.ui

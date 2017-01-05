@@ -39,6 +39,7 @@ class RPModel : public QObject
 
 public:
     RPModel();
+    ~RPModel();
 
     // Loop control
     RPThreadController* thread_controller_;
@@ -57,14 +58,13 @@ public:
     std::vector<double> baseline_lower_thresh_buffer_;
     std::vector<double> baseline_upper_thresh_buffer_;
 
+    // Syringe control
+    bool control_syringe_;
 
 
-
-    // Parser things
+    // Processor things
     Baseline baseline_;
     int baseline_length_;
-    double threshold_multiplier_;
-    double* threshold_multiplier_ptr_;
     bool looking_for_event_stop_;
     bool looking_for_event_start_;
 
@@ -80,8 +80,7 @@ signals:
 public slots:
     void start_main_loop();
 
-    // Setters/getters
-    void set_threshold_multiplier(double threshold_multiplier);
+
 
 private:
     ///////////////////////////////////////////
@@ -102,9 +101,6 @@ private:
     void look_for_event_stop();
     void increment_i();
 
-    // Misc
-    unsigned int get_time_ms(); // Gets current system time in ms. Doesn't belong here,
-                                // but works for now.
 
 
     ///////////////////////////////////////////

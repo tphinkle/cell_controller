@@ -92,24 +92,15 @@ void MainView::setup_rp_view()
 
     // Buttons
 
-    rp_increase_scale_button_ = new QPushButton("^", this);
-    rp_increase_scale_button_->setFont(*button_font_);
-
-
-    rp_decrease_scale_button_ = new QPushButton("v", this);
-    rp_decrease_scale_button_->setFont(*button_font_);
-
-
-    rp_increase_scale_button_->setGeometry(20, 150, 25, 25);
-    rp_decrease_scale_button_->setGeometry(20, 150+25, 25, 25);
-
-
     rp_start_button_ = new QPushButton("Start RP", this);
     rp_start_button_->setFont(*button_font_);
 
 
     rp_stop_button_ = new QPushButton("Stop RP", this);
     rp_stop_button_->setFont(*button_font_);
+
+    rp_start_syringe_control_button_ = new QPushButton("Syringe control", this);
+    rp_start_syringe_control_button_->setFont(*button_font_);
 
     rp_set_threshold_multiplier_button_ = new QPushButton("Threshold multiplier", this);
     rp_set_threshold_multiplier_button_->setFont(*button_font_);
@@ -298,10 +289,6 @@ void MainView::setup_layout()
     plot_layout->addWidget(rp_plot_);
     plot_layout->addWidget(camera_view_);
 
-    rp_increase_scale_button_->raise();
-    rp_decrease_scale_button_->raise();
-
-
 
 
 
@@ -309,6 +296,7 @@ void MainView::setup_layout()
     rp_controls_layout->addWidget(rp_control_label_);
     rp_controls_layout->addWidget(rp_start_button_);
     rp_controls_layout->addWidget(rp_stop_button_);
+    rp_controls_layout->addWidget(rp_start_syringe_control_button_);
     rp_controls_layout->addWidget(rp_set_threshold_multiplier_button_);
     rp_controls_layout->addWidget(rp_threshold_multiplier_field_);
     rp_controls_layout->addWidget(rp_control_syringe_checkbox_);

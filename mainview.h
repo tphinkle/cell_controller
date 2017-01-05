@@ -114,10 +114,9 @@ public:
     QLineEdit* rp_threshold_multiplier_field_;
 
     // Buttons
-    QPushButton* rp_increase_scale_button_;
-    QPushButton* rp_decrease_scale_button_;
     QPushButton* rp_start_button_;
     QPushButton* rp_stop_button_;
+    QPushButton* rp_start_syringe_control_button_;
     QPushButton* rp_set_threshold_multiplier_button_;
 
     // Check boxes

@@ -21,6 +21,16 @@ CameraController::CameraController(MainModel* main_model, MainView* main_view)
 
 }
 
+CameraController::~CameraController()
+{
+    delete [] main_model_;
+
+    delete [] main_view_;
+
+    delete [] camera_thread_;
+    delete [] camera_display_timer_;
+}
+
 void CameraController::setup_connections()
 {
     // Start button pressed

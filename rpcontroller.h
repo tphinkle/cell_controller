@@ -5,6 +5,8 @@
 // Program related
 #include <mainmodel.h>
 #include <mainview.h>
+#include <rpthreadcontroller.h>
+
 
 // Qt
 #include <QTimer>
@@ -15,6 +17,7 @@ class RPController : public QObject
 
 public:
     RPController(MainModel* main_model, MainView* main_view);
+    ~RPController();
 
     QTimer* rp_plot_timer_;
     int rp_plot_period_;
@@ -23,9 +26,7 @@ public:
 
 public slots:
     void receive_request_view_start_main_loop();
-    void increase_main_plot_range();
-    void decrease_main_plot_range();
-
+    void receive_request_view_set_threshold_multiplier();
 
 
 signals:
@@ -33,6 +34,9 @@ signals:
 private:
     MainModel*  main_model_;
     MainView* main_view_;
+
+    QThread* rp_thread_;
+    RPThreadController* rp_thread_controller_;
 };
 
 #endif // RPCONTROLLER_H

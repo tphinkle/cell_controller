@@ -17,7 +17,6 @@ Baseline::Baseline()
 {
 
 
-
 }
 
 void Baseline::update(double mean, double std_dev, double multiplier)
@@ -61,18 +60,21 @@ RPModel::RPModel()
     baseline_upper_thresh_buffer_.resize(2);                                        // baseline upper thresh
 
 
-
     // Parser things
     i_ = 0;
     baseline_length_ = 200;
     looking_for_event_start_ = true;
     looking_for_event_stop_ = false;
-    threshold_multiplier_ = 10;
-
-    threshold_multiplier_ptr_ = new double(10);
 
 
 }
+
+RPModel::~RPModel()
+{
+    delete [] sample_buffer_;
+}
+
+
 
 
 void RPModel::start_main_loop()
@@ -97,7 +99,10 @@ void RPModel::start_main_loop()
 
     while(thread_controller_->run() == true)
     {
-        process_buffer();             // Process the data in the buffer.
+        if(thread_controller_->control_syringe() == true)
+        {
+            process_buffer();             // Process the data in the buffer.
+        }
 
         sample_DAQ();               // Sample the DAQ for more data.
 
@@ -299,7 +304,7 @@ void RPModel::update_baseline(int index)
     }
     std_dev = pow(std_dev/baseline_length_, 0.5);
 
-    baseline_.update(mean, std_dev, threshold_multiplier_);
+    baseline_.update(mean, std_dev, thread_controller_->threshold_multiplier());
 
 
     // Update baseline buffers for plotting
@@ -317,26 +322,6 @@ void RPModel::update_baseline(int index)
 
 }
 
-unsigned int RPModel::get_time_ms()
-{
-    SYSTEMTIME t;
-    GetSystemTime(&t);
-    unsigned int time_ms = t.wHour*60*60*1000+\
-            t.wMinute*60*1000+\
-            t.wSecond*1000+\
-            t.wMilliseconds;
-
-    return time_ms;
-
-}
-
-
-void RPModel::set_threshold_multiplier(double threshold_multiplier)
-{
-    std::cout << "Setting threshold multiplier!: " << threshold_multiplier << std::endl;
-    threshold_multiplier_ = threshold_multiplier;
-    return;
-}
 
 // Bit-wise operator to inrement the buffer reader (i_) that is faster than using modular arithmetic. Only works if buffer is of size 2^n for uint n.
 void RPModel::increment_i()
