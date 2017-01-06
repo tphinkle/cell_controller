@@ -17,6 +17,7 @@ class CameraModel : public QObject
 
 public:
     CameraModel();
+    ~CameraModel();
 
     uchar* live_image_pointer_;
     std::vector<uchar> live_image_buffer_;

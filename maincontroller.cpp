@@ -22,6 +22,11 @@ MainController::MainController(MainModel* main_model, MainView* main_view) :
 
 }
 
+MainController::~MainController()
+{
+
+}
+
 void MainController::setup_cross_connections()
 {
     // RPModel to SyringeController connections

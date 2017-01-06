@@ -31,6 +31,11 @@ CameraModel::CameraModel()
 
 }
 
+CameraModel::~CameraModel()
+{
+    delete live_image_pointer_;
+}
+
 void CameraModel::start_data_stream()
 {
     std::cout << "Starting data stream." << std::endl;

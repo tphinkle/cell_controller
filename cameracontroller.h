@@ -13,6 +13,7 @@ class CameraController : public QObject
     Q_OBJECT
 public:
     CameraController(MainModel* main_model, MainView* main_view);
+    ~CameraController();
 
     MainModel* main_model_;
     MainView* main_view_;

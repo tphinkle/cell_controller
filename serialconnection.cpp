@@ -56,6 +56,7 @@ SerialConnection::SerialConnection()
 
 SerialConnection::~SerialConnection()
 {
+    std::cout << "Closing syringe serial connection." << std::endl;
     CloseHandle(serial_handle_);
 }
 

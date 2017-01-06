@@ -21,7 +21,7 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
 
     // Set up thread and thread controller
 
-
+    rp_thread_ = NULL;
     rp_thread_controller_ = new RPThreadController();
     main_model_->rp_model().thread_controller_ = rp_thread_controller_;
 
@@ -29,8 +29,8 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
 
 RPController::~RPController()
 {
-    delete [] rp_thread_;
-    delete [] rp_thread_controller_;
+    rp_thread_controller_->set_run(false);
+    delete rp_thread_controller_;
 
 }
 
@@ -109,8 +109,6 @@ void RPController::receive_request_view_start_main_loop()
     // Interactive connections
     ///////////////////////////
 
-    connect(main_view_->rp_control_syringe_checkbox_, SIGNAL(clicked(bool)),\
-            rp_thread_controller_, SLOT(set_control_syringe(bool)));
 
     rp_thread_->start();
 
