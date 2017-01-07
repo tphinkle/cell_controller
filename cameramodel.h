@@ -24,7 +24,8 @@ public:
 
 public slots:
     void get_live_image();
-    void set_parameters(int frame_rate, int exposure_time, int res_x, int res_y);
+    void set_live_parameters(int frame_rate, int exposure_time, int res_x, int res_y);
+    void record();
 
 signals:
     void state_update_live_image(int res_x, int res_y);
@@ -41,7 +42,8 @@ private:
     int data_port_;             // Port on which to receive data stream; can be any open port.
     std::string camera_ip_;     // 100.100.37.9 (set by Phantom camera)
     std::string server_ip_;     // The IP address of the computer this softwarwe is running on
-                                // Must be 100.100.100.1
+                                // Must be 100.100.100.1.
+                                // Computer must have gigabit ethernet interface!
 
     // Parameter stuff
     int frame_rate_;            // frames per second (fps)

@@ -35,7 +35,7 @@ void MainView::setup_main_view()
     major_label_font_ = new QFont("Arial", 16, QFont::Bold);
     minor_label_font_ = new QFont("Arial", 14);
     button_font_ = new QFont("Arial", 12);
-    checkbox_font_ = new QFont("Arial", 10);
+    // checkbox_font_ = new QFont("Arial", 10);
 
     this->setWindowState(Qt::WindowMaximized);
     this->setWindowTitle("Cell controller");
@@ -88,7 +88,7 @@ void MainView::setup_rp_view()
     rp_plot_->setAxisAutoScale(QwtPlot::yLeft, true);
     rp_plot_->axisScaleEngine(QwtPlot::xBottom)->setAttribute(QwtScaleEngine::Floating, true); // For auto scaling if I < 0
 
-    //rp_plot_->setAxisScale(QwtPlot::yLeft, -0.01, 0.01); // Manual axis
+
 
     // Buttons
 
@@ -99,8 +99,8 @@ void MainView::setup_rp_view()
     rp_stop_button_ = new QPushButton("Stop RP", this);
     rp_stop_button_->setFont(*button_font_);
 
-    rp_start_syringe_control_button_ = new QPushButton("Syringe control", this);
-    rp_start_syringe_control_button_->setFont(*button_font_);
+    rp_set_control_mode_button_ = new QPushButton("Syringe control", this);
+    rp_set_control_mode_button_->setFont(*button_font_);
 
     rp_set_threshold_multiplier_button_ = new QPushButton("Threshold multiplier", this);
     rp_set_threshold_multiplier_button_->setFont(*button_font_);
@@ -109,14 +109,6 @@ void MainView::setup_rp_view()
     rp_threshold_multiplier_field_ = new QLineEdit("", this);
     rp_threshold_multiplier_field_->setFont(*minor_label_font_);
 
-
-    // Checkboxes
-    rp_control_syringe_checkbox_ = new QCheckBox("Syringe", this);
-    rp_control_syringe_checkbox_->setFont(*checkbox_font_);
-
-
-    rp_control_camera_checkbox_ = new QCheckBox("Camera", this);
-    rp_control_camera_checkbox_->setFont(*checkbox_font_);
 
 
     return;
@@ -170,6 +162,9 @@ void MainView::setup_camera_view()
 
     camera_stop_button_ = new QPushButton("Stop camera", this);
     camera_stop_button_->setFont(*button_font_);
+
+    camera_record_button_ = new QPushButton("Record cine", this);
+    camera_record_button_->setFont(*button_font_);
 
     camera_set_frame_rate_button_ = new QPushButton("Set", this);
     camera_set_frame_rate_button_->setFont(*button_font_);
@@ -296,11 +291,9 @@ void MainView::setup_layout()
     rp_controls_layout->addWidget(rp_control_label_);
     rp_controls_layout->addWidget(rp_start_button_);
     rp_controls_layout->addWidget(rp_stop_button_);
-    rp_controls_layout->addWidget(rp_start_syringe_control_button_);
+    rp_controls_layout->addWidget(rp_set_control_mode_button_);
     rp_controls_layout->addWidget(rp_set_threshold_multiplier_button_);
     rp_controls_layout->addWidget(rp_threshold_multiplier_field_);
-    rp_controls_layout->addWidget(rp_control_syringe_checkbox_);
-    rp_controls_layout->addWidget(rp_control_camera_checkbox_);
 
 
 
@@ -309,6 +302,7 @@ void MainView::setup_layout()
     camera_controls_layout->addWidget(camera_control_label_);
     camera_controls_layout->addWidget(camera_start_button_);
     camera_controls_layout->addWidget(camera_stop_button_);
+    camera_controls_layout->addWidget(camera_record_button_);
     camera_controls_layout->addWidget(camera_resolution_label_);
     camera_controls_layout->addWidget(camera_resolution_combo_box_);
 

@@ -116,12 +116,9 @@ public:
     // Buttons
     QPushButton* rp_start_button_;
     QPushButton* rp_stop_button_;
-    QPushButton* rp_start_syringe_control_button_;
+    QPushButton* rp_set_control_mode_button_;
     QPushButton* rp_set_threshold_multiplier_button_;
 
-    // Check boxes
-    QCheckBox* rp_control_syringe_checkbox_;
-    QCheckBox* rp_control_camera_checkbox_;
 
     ///////////////////////////////////////////
     // Camera
@@ -141,7 +138,7 @@ public:
     QLineEdit* camera_exposure_time_field_;
 
     // Buttons
-    QPushButton* camera_record_cine_button_;
+    QPushButton* camera_record_button_;
 
     QPushButton* camera_start_button_;
     QPushButton* camera_stop_button_;

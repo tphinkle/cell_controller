@@ -79,7 +79,14 @@ int CameraModel::get_live_cine_number()
     return -1;
 }
 
-void CameraModel::set_parameters(int frame_rate, int exposure_time, int res_x, int res_y)
+void CameraModel::record()
+{
+
+    return;
+
+}
+
+void CameraModel::set_live_parameters(int frame_rate, int exposure_time, int res_x, int res_y)
 {
     frame_rate_ = frame_rate;
     exposure_time_ = exposure_time;

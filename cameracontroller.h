@@ -29,6 +29,7 @@ public slots:
     void receive_request_get_live_image();
     void receive_request_set_parameters();
     void receive_state_update_model_live_image(int res_x, int res_y);
+    void receive_request_start_record();
 
 
 

@@ -11,7 +11,7 @@ RPThreadController::RPThreadController()
 
     set_run(false);
     set_threshold_multiplier(100);
-    control_syringe_ = false;
+    control_syringe_ = true;
     control_camera_ = false;
 
 

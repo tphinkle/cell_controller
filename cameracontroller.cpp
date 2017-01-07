@@ -42,7 +42,7 @@ void CameraController::setup_connections()
     QObject::connect(main_view_->camera_set_parameters_button_, SIGNAL(clicked()), this, SLOT(receive_request_set_parameters()));
 
 
-    QObject::connect(this, &CameraController::command_model_set_parameters, &main_model_->camera_model(), &CameraModel::set_parameters);
+    QObject::connect(this, &CameraController::command_model_set_parameters, &main_model_->camera_model(), &CameraModel::set_live_parameters);
 
 
     //QObject::connect(&main_model_->syringe_model(), &SyringeModel::state_update_rate,
@@ -50,6 +50,8 @@ void CameraController::setup_connections()
 
     // Start button -> start live view timer
     QObject::connect(main_view_->camera_start_button_, SIGNAL(clicked()), camera_display_timer_, SLOT(start()));
+
+    QObject::connect(main_view_->camera_record_button_, SIGNAL(clicked()), this, SLOT(receive_request_view_record()));
 
 
     // Timer timeout -> Request camera get live image
@@ -70,6 +72,13 @@ void CameraController::setup_connections()
 
 
 
+    return;
+}
+
+void CameraController::receive_request_start_record()
+{
+
+    std::cout << "start record!" << std::endl;
     return;
 }
 

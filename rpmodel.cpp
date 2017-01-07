@@ -62,7 +62,7 @@ RPModel::RPModel()
 
     // Parser things
     i_ = 0;
-    baseline_length_ = 200;
+    baseline_length_ = 500;
     looking_for_event_start_ = true;
     looking_for_event_stop_ = false;
 

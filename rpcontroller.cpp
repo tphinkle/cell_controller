@@ -122,3 +122,9 @@ void RPController::receive_request_view_set_threshold_multiplier()
     return;
 }
 
+void RPController::receive_request_view_set_control_mode()
+{
+    rp_thread_controller_->set_control_mode(true);
+    return;
+}
+
