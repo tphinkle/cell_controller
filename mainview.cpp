@@ -24,6 +24,7 @@ void MainView::setup()
     setup_rp_view();
     setup_camera_view();
     setup_syringe_view();
+    setup_miscellaneous_view();
 
     setup_layout();
 
@@ -57,6 +58,7 @@ void MainView::setup_rp_view()
 
     rp_plot_curve_ = new QwtPlotCurve(QwtText("RP Data"));
     rp_plot_curve_->attach(rp_plot_);
+    //rp_plot_curve_->setRenderHint(QwtPlotItem::RenderAntialiased, false);
 
     rp_plot_panner_ = new QwtPlotPanner(rp_plot_->canvas());
     rp_plot_panner_->setAxisEnabled(QwtPlot::yLeft, true);
@@ -149,11 +151,11 @@ void MainView::setup_camera_view()
     // Fields
     camera_frame_rate_field_ = new QLineEdit("", this);
     camera_frame_rate_field_->setFont(*minor_label_font_);
-    camera_frame_rate_field_->setText("1000");
+    camera_frame_rate_field_->setText("10000");
 
     camera_exposure_time_field_ = new QLineEdit("", this);
     camera_exposure_time_field_->setFont(*minor_label_font_);
-    camera_exposure_time_field_->setText("20000");
+    camera_exposure_time_field_->setText("2000");
 
     // Buttons
     camera_start_button_ = new QPushButton("Start camera", this);
@@ -174,6 +176,9 @@ void MainView::setup_camera_view()
 
     camera_set_parameters_button_ = new QPushButton("Set parameters", this);
     camera_set_parameters_button_->setFont(*button_font_);
+
+    camera_get_cine_info_button_ = new QPushButton("Get cine info", this);
+    camera_get_cine_info_button_->setFont(*button_font_);
 
 
 
@@ -244,6 +249,12 @@ void MainView::setup_syringe_view()
     return;
 }
 
+void MainView::setup_miscellaneous_view()
+{
+    dual_record_button_ = new QPushButton("Dual record", this);
+    dual_record_button_->setFont(*button_font_);
+}
+
 void MainView::setup_layout()
 {
     QWidget* main_widget = new QWidget();
@@ -251,6 +262,7 @@ void MainView::setup_layout()
     QWidget* plot_widget = new QWidget();
     QWidget* rp_controls_widget = new QWidget();
     QWidget* camera_controls_widget = new QWidget();
+    QWidget* miscellaneous_controls_widget = new QWidget();
 
     setCentralWidget(main_widget);
 
@@ -259,6 +271,7 @@ void MainView::setup_layout()
     main_layout->addWidget(plot_widget);
     main_layout->addWidget(rp_controls_widget);
     main_layout->addWidget(camera_controls_widget);
+    main_layout->addWidget(miscellaneous_controls_widget);
 
 
 
@@ -315,6 +328,12 @@ void MainView::setup_layout()
     camera_controls_layout->addWidget(camera_set_exposure_time_button_);
 
     camera_controls_layout->addWidget(camera_set_parameters_button_);
+    camera_controls_layout->addWidget(camera_get_cine_info_button_);
+
+
+
+    QHBoxLayout*miscellaneous_controls_layout = new QHBoxLayout(miscellaneous_controls_widget);
+    miscellaneous_controls_layout->addWidget(dual_record_button_);
 
 
 

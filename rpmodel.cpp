@@ -1,8 +1,12 @@
 // Standard library
+#include <stdlib.h>
 #include <iostream>
 #include <time.h>
 #include <chrono>
 #include <math.h>
+#include <fstream>
+#include <iterator>
+#include <sstream>
 
 // Windows
 #include <windows.h>
@@ -41,7 +45,7 @@ RPModel::RPModel()
     sample_buffer_ = new float64[sample_buffer_length_];
 
     // Buffer things
-    data_buffer_length_ = pow(2,17); //131072
+    data_buffer_length_ = pow(2,20); //131072
     data_buffer_head_ = 0;
     time_buffer_.resize(data_buffer_length_);
     for(unsigned int i = 0; i < time_buffer_.size(); i++)
@@ -49,6 +53,19 @@ RPModel::RPModel()
         time_buffer_[i] = i;
     }
     data_buffer_.resize(data_buffer_length_);
+    std::fill(data_buffer_.begin(), data_buffer_.end(), 0);
+
+    // Set up plot buffers
+    decimation_factor_ = 64;
+    plot_data_buffer_length_ = data_buffer_length_/decimation_factor_;
+    plot_time_buffer_ = new double[plot_data_buffer_length_];
+    plot_data_buffer_ = new double[plot_data_buffer_length_];
+
+
+    // Set the memory location of the plot buffers
+    for(int i = 0; i < plot_data_buffer_length_; i++){
+        plot_time_buffer_[i] = time_buffer_[i*decimation_factor_];
+    }
 
 
     // Set up buffers for displaying the baseline. This is sort of hackish, but is necessary to have to make plotting the baseline easier.
@@ -101,18 +118,46 @@ void RPModel::start_main_loop()
     {
         if(thread_controller_->control_syringe() == true)
         {
+            std::cout << "Processing buffer" << std::endl;
             process_buffer();             // Process the data in the buffer.
         }
+
+
 
         sample_DAQ();               // Sample the DAQ for more data.
 
         update_buffer();            // Add the new data from the DAQ to the buffer.
+
+        save_buffer();
     }
 
 
 
     return;
 
+}
+
+void RPModel::save_buffer()
+{
+    if(thread_controller_->save_buffer() == true)
+    {
+        static int save_index = 0;
+        std::stringstream save_index_ss;
+        save_index_ss << save_index;
+        std::string save_index_string = save_index_ss.str();
+        std::ofstream output_file("D:\\test_rp_" + save_index_string, std::ios::binary);
+        save_index++;
+        for(int i = 0; i < data_buffer_.size(); i++)
+        {
+            output_file << data_buffer_[(data_buffer_head_ + i + 1)%data_buffer_length_];
+            output_file << "\n";
+        }
+
+
+        thread_controller_->set_save_buffer(false);
+    }
+
+    return;
 }
 
 
@@ -173,6 +218,11 @@ void RPModel::update_buffer()
     for(unsigned int i = 0; i < sample_buffer_length_; i++)
     {
         data_buffer_[(data_buffer_head_+i)%data_buffer_length_] = sample_buffer_[i];
+    }
+
+    // Update the plot buffer
+    for(unsigned int i = 0; i < sample_buffer_length_/decimation_factor_; i++){
+        plot_data_buffer_[(data_buffer_head_/decimation_factor_ + i)%plot_data_buffer_length_] = data_buffer_[(data_buffer_head_+i*decimation_factor_)%data_buffer_length_];
     }
 
     // Increment the buffer head
@@ -246,8 +296,9 @@ void RPModel::look_for_event_start()
                 (data_buffer_[i_] < baseline_.lower_thresh_))
         {
             std::cout << "Event start found! 1" << std::endl;
-            looking_for_event_start_ = false;
-            looking_for_event_stop_ = true;
+            event_start_found();
+            return;
+
 
         }
 
@@ -265,6 +316,7 @@ void RPModel::look_for_event_start()
 void RPModel::look_for_event_stop()
 {
 
+
     if((data_buffer_[i_] <= baseline_.upper_thresh_) & \
         (data_buffer_[i_] >= baseline_.lower_thresh_))
     {
@@ -274,14 +326,37 @@ void RPModel::look_for_event_stop()
         // Reverse syringe
 
         std::cout << "\tEvent stop found!" << std::endl;
-
-        looking_for_event_start_ = true;
-        looking_for_event_stop_ = false;
+        event_stop_found();
+        return;
     }
 
     increment_i();
 
     return;
+}
+
+void RPModel::event_start_found()
+{
+    if(thread_controller_->control_syringe())
+    {
+        emit request_syringe_switch_direction();
+    }
+
+    if(thread_controller_->control_camera())
+    {
+        emit request_camera_record();
+    }
+
+    looking_for_event_start_ = false;
+    looking_for_event_stop_ = true;
+    return;
+}
+
+void RPModel::event_stop_found()
+{
+    //emit reverse_syringe();
+    looking_for_event_start_ = true;
+    looking_for_event_stop_ = false;
 }
 
 void RPModel::update_baseline(int index)

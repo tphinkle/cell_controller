@@ -27,6 +27,11 @@ public:
 public slots:
     void receive_request_view_start_main_loop();
     void receive_request_view_set_threshold_multiplier();
+    void receive_request_view_set_control_mode();
+    void receive_request_record();
+
+
+
 
 
 signals:

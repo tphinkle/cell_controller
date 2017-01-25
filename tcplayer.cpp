@@ -202,17 +202,24 @@ std::string TCPLayer::send_command(std::string command)
 {
     //std::cout << "Trying to send command: " << std::endl << "\t" << command << std::endl;
 
+    if(command_socket_ == INVALID_SOCKET){
+        std::cout << "Command socket not open!" << std::endl;
+        return 0x00;
+    }
+
     send(command_socket_, command.c_str(), command.length(), NULL);
 
     char recv_buffer[10000];
-    recv(command_socket_, recv_buffer, sizeof(recv_buffer), NULL);
-    //std::cout << std::string(recv_buffer) << std::endl;
-    return std::string(recv_buffer);
+    int bytes = recv(command_socket_, recv_buffer, sizeof(recv_buffer), NULL);
+
+    return std::string(recv_buffer).substr(0, bytes);
 
 }
 
 void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_buffer)
 {
+
+
     send_command(request);
 
 
@@ -228,30 +235,20 @@ void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_b
     }
 
 
-
-    set_data_socket_blocking(true);
-
     int data_buffer_iter = 0;
-    char temp_buffer[1];
 
     int bytes_returned;
-
-
 
     set_data_socket_blocking(false);
 
 
-
-
-
     while(data_buffer_iter < data_buffer.size())
     {
-        bytes_returned = recv(data_socket_, temp_buffer, sizeof(temp_buffer), 0);
+        bytes_returned = recv(data_socket_, (char*)&(data_buffer[data_buffer_iter]), data_buffer.size()-data_buffer_iter, 0);
 
-        for(int i = 0; i < bytes_returned; i++)
-        {
-            data_buffer[data_buffer_iter] = temp_buffer[i];
-            data_buffer_iter++;
+
+        if(bytes_returned > 0){
+            data_buffer_iter += bytes_returned;
         }
 
 
@@ -265,6 +262,42 @@ void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_b
 
     return;
 }
+
+void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_buffer, int size)
+{
+    std::cout << "size = " <<   size << std::endl;
+    //return;
+    std::cout << send_command(request) << std::endl;
+
+
+
+    int data_buffer_iter = 0;
+    int bytes_returned;
+
+    set_data_socket_blocking(false);
+
+
+    while(data_buffer_iter < size)
+    {
+        //std::cout << data_buffer_iter << std::endl;
+        bytes_returned = recv(data_socket_, (char*)&(data_buffer[data_buffer_iter]), size-data_buffer_iter, 0);
+
+        if(bytes_returned > 0){
+            data_buffer_iter += bytes_returned;
+        }
+
+
+
+    }
+
+
+    std::cout << "1" << std::endl;
+
+    set_data_socket_blocking(true);
+
+    return;
+}
+
 
 ///////////////////////////////////////////////
 /// Closing

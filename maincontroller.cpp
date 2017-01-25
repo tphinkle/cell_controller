@@ -33,6 +33,18 @@ void MainController::setup_cross_connections()
     QObject::connect(&main_model_->rp_model(), SIGNAL(request_syringe_switch_direction()),\
                      &syringe_controller_, SLOT(receive_request_switch_direction()));
 
+    // Dual record button
+    QObject::connect(main_view_->dual_record_button_, SIGNAL(clicked()),
+                     &rp_controller_, SLOT(receive_request_record()));
+
+    QObject::connect(main_view_->dual_record_button_, SIGNAL(clicked()),
+                     &camera_controller_, SLOT(receive_request_view_record()));
+
+
+
+
+
+
     return;
 }
 

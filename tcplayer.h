@@ -33,6 +33,7 @@ public:
     // Commands
     std::string send_command(std::string command);
     void send_data_request(std::string command, std::vector<uchar>& buffer);
+    void send_data_request(std::string command, std::vector<uchar>& buffer, int size);
 
     // Closing
     void close();

@@ -14,7 +14,6 @@ CameraController::CameraController(MainModel* main_model, MainView* main_view)
     camera_display_timer_->setInterval(camera_display_period_);
 
     camera_thread_ = new QThread();
-
     main_model_->camera_model().moveToThread(camera_thread_);
 
     camera_thread_->start();
@@ -24,7 +23,7 @@ CameraController::CameraController(MainModel* main_model, MainView* main_view)
 CameraController::~CameraController()
 {
 
-    delete camera_thread_;
+    //delete camera_thread_;
     delete camera_display_timer_;
 }
 
@@ -40,18 +39,15 @@ void CameraController::setup_connections()
 
     // Set parameters abutton
     QObject::connect(main_view_->camera_set_parameters_button_, SIGNAL(clicked()), this, SLOT(receive_request_set_parameters()));
-
-
     QObject::connect(this, &CameraController::command_model_set_parameters, &main_model_->camera_model(), &CameraModel::set_live_parameters);
 
 
-    //QObject::connect(&main_model_->syringe_model(), &SyringeModel::state_update_rate,
-      //               this, &SyringeController::receive_state_update_model_rate)
 
     // Start button -> start live view timer
     QObject::connect(main_view_->camera_start_button_, SIGNAL(clicked()), camera_display_timer_, SLOT(start()));
 
     QObject::connect(main_view_->camera_record_button_, SIGNAL(clicked()), this, SLOT(receive_request_view_record()));
+
 
 
     // Timer timeout -> Request camera get live image
@@ -64,21 +60,38 @@ void CameraController::setup_connections()
     QObject::connect(&main_model_->camera_model(), &CameraModel::state_update_live_image, this, &CameraController::receive_state_update_model_live_image);
 
 
-    // Timer finished -> Restart timer
-    //QObject::connect(camera_display_timer_, SIGNAL(timeout()), camera_display_timer_, SLOT(start()));
 
     // Stop button
     QObject::connect(main_view_->camera_stop_button_, SIGNAL(clicked()), camera_display_timer_, SLOT(stop()));
+
+
+    // Request get cine info button
+    QObject::connect(main_view_->camera_get_cine_info_button_, SIGNAL(clicked()), this, SLOT(receive_request_view_get_cine_info()));
+
+
+    QObject::connect(this, SIGNAL(command_model_record()), &main_model_->camera_model(), SLOT(record()));
+
+    camera_thread_ = new QThread();
+    //main_model_->camera_model().moveToThread(camera_thread_);
+
+    //camera_thread_->start();
 
 
 
     return;
 }
 
-void CameraController::receive_request_start_record()
+void CameraController::receive_request_view_record()
 {
+    //camera_display_timer_->stop();
+    emit command_model_record();
 
-    std::cout << "start record!" << std::endl;
+    return;
+}
+
+void CameraController::receive_request_view_get_cine_info()
+{
+    main_model_->camera_model().get_cine_info();
     return;
 }
 

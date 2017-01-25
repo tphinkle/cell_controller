@@ -14,7 +14,7 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
     main_view_ = main_view;
 
 
-    rp_plot_period_ = (1000./60);
+    rp_plot_period_ = (1000./30);
     rp_plot_timer_ = new QTimer();
     rp_plot_timer_->setInterval(rp_plot_period_);
 
@@ -36,11 +36,15 @@ RPController::~RPController()
 
 void RPController::setup_connections()
 {
-    // Shared buffers
+
+    //main_view_->qwt_series_data_time_;
+    //main_view_->qwt_series_data_time_;
+
+    // Shared buffers    
     main_view_->rp_plot_curve_->setRawSamples(\
-                &main_model_->rp_model().time_buffer_.front(),\
-                &main_model_->rp_model().data_buffer_.front(),\
-                main_model_->rp_model().data_buffer_.size()\
+                main_model_->rp_model().plot_time_buffer_,\
+                main_model_->rp_model().plot_data_buffer_,\
+                main_model_->rp_model().plot_data_buffer_length_\
                 );
 
     main_view_->rp_baseline_mean_plot_curve_->setRawSamples(\
@@ -58,6 +62,8 @@ void RPController::setup_connections()
                 &main_model_->rp_model().baseline_upper_thresh_buffer_.front(),
                 2);
 
+    main_view_->rp_plot_->setAxisScale(0, -.1, 0.1, 0);
+
 
     // View requests
     QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()),\
@@ -66,6 +72,10 @@ void RPController::setup_connections()
     QObject::connect(main_view_->rp_set_threshold_multiplier_button_, SIGNAL(clicked()),
                      this, SLOT(receive_request_view_set_threshold_multiplier()));
 
+    QObject::connect(main_view_->rp_set_control_mode_button_, SIGNAL(clicked()),
+                     this, SLOT(receive_request_view_set_control_mode()));
+
+
 
 
 
@@ -73,6 +83,8 @@ void RPController::setup_connections()
     QObject::connect(main_view_->rp_start_button_, SIGNAL(clicked()), rp_plot_timer_, SLOT(start()));
     QObject::connect(rp_plot_timer_, SIGNAL(timeout()), main_view_->rp_plot_, SLOT(replot()));
     QObject::connect(rp_plot_timer_, SIGNAL(timeout()), this->rp_plot_timer_, SLOT(start()));
+
+
 
 
 
@@ -122,9 +134,23 @@ void RPController::receive_request_view_set_threshold_multiplier()
     return;
 }
 
-void RPController::receive_request_view_set_control_mode()
+void RPController::receive_request_record()
 {
-    rp_thread_controller_->set_control_mode(true);
+    rp_thread_controller_->set_save_buffer(true);
     return;
 }
+
+void RPController::receive_request_view_set_control_mode()
+{
+    if(rp_thread_controller_->control_syringe() == false)
+    {
+        rp_thread_controller_->set_control_mode(true);
+    }
+    else
+    {
+        rp_thread_controller_->set_control_mode(false);
+    }
+    return;
+}
+
 

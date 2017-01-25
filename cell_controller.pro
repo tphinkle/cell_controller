@@ -51,6 +51,7 @@ FORMS    += \
 
 #INCLUDEPATH += C:\Program Files\National$$Instruments\NI-DAQ\DAQmx$$ANSI$$C$$Dev
 
-CONFIG += qwt
+CONFIG += qwt \
+            c++11
 
 DEFINES += QWT_DLL

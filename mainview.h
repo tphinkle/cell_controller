@@ -25,6 +25,7 @@
 #include <qwt_interval.h>
 #include <qwt_plot_panner.h>
 #include  <qwt_plot_magnifier.h>
+#include <qwt_series_data.h>
 
 
 
@@ -39,6 +40,8 @@
 /// the UI needs to have a reference/pointer to the source of the data that it is responsible for displaying.
 /// This reference/pointer should point to data allocated on the heap. Allocation occurs in the relevant ____model.
 /// This significantly reduces the complexity of the UI calls.
+
+
 
 
 
@@ -148,10 +151,15 @@ public:
 
     QPushButton* camera_set_parameters_button_;
 
+    QPushButton* camera_get_cine_info_button_;
+
     // Plot
     QGraphicsScene* camera_scene_;
     QGraphicsPixmapItem* camera_pixmapitem_;
     QGraphicsView* camera_view_;
+
+    // Miscellaneous
+    QPushButton* dual_record_button_;
 
 
 
@@ -168,6 +176,7 @@ private:
     void setup_rp_view();
     void setup_camera_view();
     void setup_syringe_view();
+    void setup_miscellaneous_view();
     void setup_layout();
 
 };

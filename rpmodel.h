@@ -51,15 +51,15 @@ public:
     unsigned int data_buffer_head_;
     std::vector<double> time_buffer_;
     std::vector<double> data_buffer_;
+    double* plot_time_buffer_;
+    double* plot_data_buffer_;
+    int plot_data_buffer_length_;
 
     // For plotting the mean, upper thresh, and lower thresh lines
     std::vector<double> baseline_time_buffer_;
     std::vector<double> baseline_mean_buffer_;
     std::vector<double> baseline_lower_thresh_buffer_;
     std::vector<double> baseline_upper_thresh_buffer_;
-
-    // Syringe control
-    bool control_syringe_;
 
 
     // Processor things
@@ -76,6 +76,7 @@ public:
 signals:
     // For communicating with other threads.
     void request_syringe_switch_direction();
+    void request_camera_record();
 
 public slots:
     void start_main_loop();
@@ -93,6 +94,7 @@ private:
 
     // Buffer
     void update_buffer();
+    void save_buffer();
 
     // Processer
     void process_buffer();
@@ -100,6 +102,8 @@ private:
     void look_for_event_start();
     void look_for_event_stop();
     void increment_i();
+    void event_start_found();
+    void event_stop_found();
 
 
 

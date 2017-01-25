@@ -11,8 +11,9 @@ RPThreadController::RPThreadController()
 
     set_run(false);
     set_threshold_multiplier(100);
-    control_syringe_ = true;
+    control_syringe_ = false;
     control_camera_ = false;
+    save_buffer_ = false;
 
 
 
@@ -44,6 +45,13 @@ void RPThreadController::stop_run()
 bool RPThreadController::run()
 {
     return run_;
+}
+
+void RPThreadController::set_control_mode(bool control_mode)
+{
+    set_control_syringe(control_mode);
+    set_control_camera(control_mode);
+    return;
 }
 
 ///////////////////////////////
@@ -99,5 +107,24 @@ void RPThreadController::set_threshold_multiplier(double threshold_multiplier)
     threshold_multiplier_ = threshold_multiplier;
     return;
 }
+
+//////////////////////////////////
+//
+// Save buffer
+//
+//////////////////////////////////
+
+bool RPThreadController::save_buffer()
+{
+    return save_buffer_;
+}
+
+void RPThreadController::set_save_buffer(bool save_buffer)
+{
+   save_buffer_ = save_buffer;
+   return;
+}
+
+
 
 
