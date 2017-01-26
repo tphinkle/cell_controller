@@ -39,7 +39,7 @@ void CameraController::setup_connections()
 
     // Set parameters abutton
     QObject::connect(main_view_->camera_set_parameters_button_, SIGNAL(clicked()), this, SLOT(receive_request_set_parameters()));
-    QObject::connect(this, &CameraController::command_model_set_parameters, &main_model_->camera_model(), &CameraModel::set_live_parameters);
+    QObject::connect(this, &CameraController::command_model_set_default_all_parameters, &main_model_->camera_model(), &CameraModel::set_default_all_parameters);
 
 
 
@@ -107,16 +107,21 @@ void CameraController::receive_request_set_parameters()
     int frame_rate = main_view_->camera_frame_rate_field_->text().toDouble();
     int exposure_time = main_view_->camera_exposure_time_field_->text().toDouble();
 
+
     QString res = main_view_->camera_resolution_combo_box_->currentText();
     int res_x = res.split("x")[0].toDouble();
     int res_y = res.split("x")[1].toDouble();
+
+    int num_images = 3000;
 
     std::cout << "frame_rate: " << frame_rate << std::endl;
     std::cout << "exposure_time: " << exposure_time << std::endl;
     std::cout << "res_x: " << res_x << std::endl;
     std::cout << "res_y: " << res_y << std::endl;
+    std::cout << "num_images: " << num_images << std::endl;
 
-    emit command_model_set_parameters(frame_rate, exposure_time, res_x, res_y);
+
+    emit command_model_set_default_all_parameters(frame_rate, exposure_time, res_x, res_y, num_images);
 
     return;
 }

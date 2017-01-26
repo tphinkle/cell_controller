@@ -200,10 +200,10 @@ void TCPLayer::set_data_socket_blocking(bool blocking)
 
 std::string TCPLayer::send_command(std::string command)
 {
-    //std::cout << "Trying to send command: " << std::endl << "\t" << command << std::endl;
 
-    if(command_socket_ == INVALID_SOCKET){
-        std::cout << "Command socket not open!" << std::endl;
+
+    if(initialized_ == false){
+        std::cout << "TCP layer did not initialize properly; cannot run!" << std::endl;
         return 0x00;
     }
 
@@ -218,6 +218,10 @@ std::string TCPLayer::send_command(std::string command)
 
 void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_buffer)
 {
+    if(initialized_ == false){
+        std::cout << "TCP layer did not initialize properly; cannot run!" << std::endl;
+        return 0x00;
+    }
 
 
     send_command(request);
@@ -265,33 +269,29 @@ void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_b
 
 void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_buffer, int size)
 {
-    std::cout << "size = " <<   size << std::endl;
-    //return;
-    std::cout << send_command(request) << std::endl;
+    if(initialized_ == false){
+        std::cout << "TCP layer did not initialize properly; cannot run!" << std::endl;
+        return 0x00;
+    }
 
 
+    send_command(request);
 
     int data_buffer_iter = 0;
-    int bytes_returned;
+    int bytes_returned = 0;
 
     set_data_socket_blocking(false);
 
 
     while(data_buffer_iter < size)
     {
-        //std::cout << data_buffer_iter << std::endl;
         bytes_returned = recv(data_socket_, (char*)&(data_buffer[data_buffer_iter]), size-data_buffer_iter, 0);
 
         if(bytes_returned > 0){
             data_buffer_iter += bytes_returned;
         }
 
-
-
     }
-
-
-    std::cout << "1" << std::endl;
 
     set_data_socket_blocking(true);
 

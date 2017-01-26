@@ -21,62 +21,31 @@ CameraModel::CameraModel()
     // Constants
     command_port_ = 7115;
     data_port_ = 15234;
-    max_memory_ = 2048; //MB (camera)
-    max_buffer_size_ = 500; // MB (computer)
+    camera_buffer_size_ = 2048000000; // B (camera) total, divided between all cines
+    recording_buffer_size_ = 500000000; // B (computer)
     camera_ip_ = "100.100.37.9";
     server_ip_ = "100.100.100.1";
-
-    // Camera variables
-    frame_rate_ = 10000; // fps
-    exposure_time_ = 2000; // in ns
-    num_images_ = 3000; // Number of images to request
 
 
     // Initialize
     tcplayer_.initialize(command_port_, data_port_, camera_ip_, server_ip_);
 
-    // Set resolution
-    set_resolution(640, 480);
+    // Set camera default parameters
+    // frame_rate_, exposure_time_, res_x_, res_y_, num_images_
+    set_default_all_parameters(10000, .000005, 640, 480, 3000);
 
+    tcplayer_.send_command("rec 1\r");
 
-
-
-
-    //set_live_parameters_camera();
-
-    //start_data_stream();
+    // Start the data stream
+    start_data_stream();
 
 }
 
-CameraModel::set_resolution(int res_x, int res_y){
-    // Set parameters
-    res_x_ = res_x;
-    res_y_ = res_y;
-    image_size_ = res_x_*res_y_;
 
-    // Resize live image buffer
-    live_image_buffer_.resize(image_size_);
-    live_image_pointer_ = &live_image_buffer_[0];
-
-    // Resize recorded image buffer
-    int reserve_size;
-    if(image_size_*num_images_ > max_buffer_size_*1000000){
-        reserve_size = max_buffer_size_*1000000;
-    }
-    else{
-        reserve_size = image_size_*num_images_;
-    }
-
-    recorded_image_buffer_.resize(reserve_size);
-
-    set_default_parameters();
-
-    return;
-}
 
 CameraModel::~CameraModel()
 {
-    delete live_image_pointer_;
+
 }
 
 void CameraModel::start_data_stream()
@@ -153,11 +122,7 @@ void CameraModel::record()
     int total_frames = stop_index - start_index+1;
 
 
-    int frcount = get_cine_frcount(current_cine);
-
-
-
-    if((total_frames*res_x_*res_y_) >= max_buffer_size_*1000000){
+    if((total_frames*res_x_*res_y_) >= recording_buffer_size_){
         // Num frames exceeds total buffer size; save in chunks instead.
 
 
@@ -167,10 +132,10 @@ void CameraModel::record()
 
 
         // Loop over chunks of data.
-        for(int i = 0; i < (total_frames*res_x_*res_y_)/(max_buffer_size_*1000000) + 1; i++){
+        for(int i = 0; i < (total_frames*res_x_*res_y_)/(recording_buffer_size_) + 1; i++){
             std::cout << "i = " << i << std::endl;
-            j = start_index + i*max_buffer_size_*1000000/(res_x_*res_y_);  // Left point
-            k = j + max_buffer_size_*1000000/(res_x_*res_y_) - 1; // Right
+            j = start_index + i*recording_buffer_size_/(res_x_*res_y_);  // Left point
+            k = j + recording_buffer_size_/(res_x_*res_y_) - 1; // Right
 
             if(k > stop_index){  // This should only trigger on last iter; this is the left over stuff that doesn't fill the entire buffer
                 k = stop_index;
@@ -182,7 +147,7 @@ void CameraModel::record()
 
             tcplayer_.send_data_request("img {cine:" + current_cine_str + ", start:"+std::to_string(j)+", cnt:"+std::to_string(interval)+"}\r",\
                                         recorded_image_buffer_,\
-                                        (interval-3)*res_x_*res_y_);
+                                        (interval-3)*res_x_*res_y_); // -3 to prevent infinite loop; shouldn't really be here
 
 
 
@@ -198,40 +163,17 @@ void CameraModel::record()
 
 
     else{
-        std::cout << "start_index = " << start_index << std::endl;
-        std::cout << "stop_index = " << stop_index << std::endl;
-        std::cout << "total_frames = " << total_frames << std::endl;
-        // Num frames fits inside the buffer; do a normal retrieve and write.
+        // Number of frames fits inside the buffer; call 'tcplayer_.send_data_request' just once.
         tcplayer_.send_data_request("img {cine:" + current_cine_str + ", start:"+std::to_string(start_index)+", cnt:"+std::to_string(total_frames)+"}\r",\
-                                    recorded_image_buffer_, (total_frames-3)*res_x_*res_y_);
+                                    recorded_image_buffer_, (total_frames-3)*res_x_*res_y_); // - 3 is to prevent infinite loop.
 
         output_file.write((char*)write_head, (total_frames-3)*res_x_*res_y_);
     }
 
-    output_file.close();
+    output_file.close(); // Close file
 
     return;
 
-
-
-    //output_file.write((char*)write_head, num_images_*res_x_*res_y_);
-    //output_file.close();
-
-    // Move to the next cine
-    int next_cine = (current_cine + 1)%5;
-    if(next_cine == 0)
-    {
-        next_cine = 1;
-    }
-    std::string next_cine_str = std::to_string(next_cine);
-
-    // Start recording in next cine
-    //std::cout << tcplayer_.send_command("rec "+next_cine_str+"\r") << std::endl;
-
-
-
-
-    return;
 
 }
 
@@ -290,69 +232,79 @@ void CameraModel::get_cine_info()
 }
 
 
-void CameraModel::set_live_parameters(int frame_rate, int exposure_time, int res_x, int res_y)
+void CameraModel::set_default_all_parameters(int frame_rate, int exposure_time, int res_x, int res_y, int num_images)
 {
+    // Check parameter validity
+
+    if(1./frame_rate < 0.000001*exposure_time){
+        std::cout << "Invalid frame rate and exposure time entries!" << std::endl;
+        return;
+    }
+
+    if(num_images*res_x*res_y > camera_buffer_size_){
+        std::cout << "Could not allocate memory! Max on-board camera memory is 2048 MB." << std::endl;
+        return;
+    }
+
+    // Parameters are valid, continue.
+
+    // Frame rate, exposure time
     frame_rate_ = frame_rate;
     exposure_time_ = exposure_time;
+
+
+    // Resolution
     res_x_ = res_x;
     res_y_ = res_y;
     image_size_ = res_x_*res_y_;
-    std::cout << "a" << std::endl;
+
+    // Number of images to store per cine
+    num_images_ = num_images;
+
+    // Number of cines
+    num_cines_ = 1;
+
+    // Reallocate memory in live image buffer
     live_image_buffer_.resize(res_x_*res_y_);      // Buffer needs to be resized.
-    std::cout << "b" << std::endl;
     live_image_pointer_ = &live_image_buffer_[0];  // Buffer head needs to be put back to beginning.
-    std::cout << "c" << std::endl;
-    recorded_image_buffer_.resize(image_size_*num_images_);
-    std::cout << "d" << std::endl;
-    set_live_parameters_camera();
+
+    // Reallocate memory in recorded image buffer
+    int allocation_space = 0;
+    if(image_size_*num_images_ > recording_buffer_size_){
+        allocation_space = recording_buffer_size_;
+    }
+    else{
+        allocation_space = image_size_*num_images_;
+    }
+    recorded_image_buffer_.resize(allocation_space);
+
+
+    // Send the parameter info to the camera
+    set_default_all_parameters_camera();
 
 
     return;
 }
 
-void CameraModel::set_default_parameters_camera(){
+
+void CameraModel::set_default_all_parameters_camera(){
+
+    // Allocate space on the camera cines
+    tcplayer_.send_command("alloc {"+ std::to_string(image_size_*num_images_/1000000.) + "}\r");
+
+
+    // Set defaults for camera
     std::string cmd = "set defc.* {";
     cmd += "res:" + std::to_string(res_x_) + "x" + std::to_string(res_y_)+", ";
     cmd += "rate:" + std::to_string(frame_rate_)+", ";
     cmd += "ptframes:0, ";
-    cmd += "exp:" + std::to_string(exposure_time_)+"}\r";
-
-
+    cmd += "exp:" + std::to_string(exposure_time_*1000)+"}\r";      // *1000: Convert to nanoseconds
 
     tcplayer_.send_command(cmd);
 
     return;
 }
 
-void CameraModel::set_live_parameters_camera()
-{
-
-
-    // Allocate memory on camera
-    int cine_size = image_size_*num_images_/1000000.;   // cine size is size of image, times number of frames to record, in MB (divide by mil)
-    std::string cine_size_str = std::to_string(cine_size);
-    std::cout << "Allocating cines " <<
-                 tcplayer_.send_command("alloc {"+ cine_size_str + "}\r") << std::endl;//", " + cine_size_str + ", " + cine_size_str + ", " + cine_size_str + "}\r") <<
-                 //std::endl;
-
-
-
-    std::string cmd = "set defc.* {";
-    cmd += "res:" + std::to_string(res_x_) + "x" + std::to_string(res_y_)+", ";
-    cmd += "rate:" + std::to_string(frame_rate_)+", ";
-    cmd += "ptframes:0, ";
-    cmd += "exp:" + std::to_string(exposure_time_)+"}\r";
-
-
-
-    tcplayer_.send_command(cmd);
-
-
-
-    tcplayer_.send_command("rec 1\r");
-
-    return;
-}
 
 
 std::vector<std::string> CameraModel::split_string(std::string str, std::string split_str)

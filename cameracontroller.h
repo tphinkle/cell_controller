@@ -37,7 +37,7 @@ public slots:
 
 signals:
     void command_model_get_live_image();
-    void command_model_set_parameters(int frame_rate, int exposure_time, int res_x, int res_y);
+    void command_model_set_default_all_parameters(int frame_rate, int exposure_time, int res_x, int res_y, int num_images);
     void command_model_record();
 
 

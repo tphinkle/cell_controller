@@ -139,13 +139,13 @@ void MainView::setup_camera_view()
     camera_control_label_ = new QLabel("Camera Controls", this);
     camera_control_label_->setFont(*major_label_font_);
 
-    camera_resolution_label_ = new QLabel("Resolution", this);
+    camera_resolution_label_ = new QLabel("Resolution (pix squared)", this);
     camera_resolution_label_->setFont(*minor_label_font_);
 
     camera_frame_rate_label_ = new QLabel("Frame rate (S/s)", this);
     camera_frame_rate_label_->setFont(*minor_label_font_);
 
-    camera_exposure_time_label_ = new QLabel("Exposure time (ns)", this);
+    camera_exposure_time_label_ = new QLabel("Exposure time (us)", this);
     camera_exposure_time_label_->setFont(*minor_label_font_);
 
     // Fields
@@ -155,7 +155,7 @@ void MainView::setup_camera_view()
 
     camera_exposure_time_field_ = new QLineEdit("", this);
     camera_exposure_time_field_->setFont(*minor_label_font_);
-    camera_exposure_time_field_->setText("2000");
+    camera_exposure_time_field_->setText("2");
 
     // Buttons
     camera_start_button_ = new QPushButton("Start camera", this);
