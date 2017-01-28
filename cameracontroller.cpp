@@ -18,6 +18,8 @@ CameraController::CameraController(MainModel* main_model, MainView* main_view)
 
     camera_thread_->start();
 
+    setup_connections();
+
 }
 
 CameraController::~CameraController()

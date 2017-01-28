@@ -32,12 +32,17 @@ CameraModel::CameraModel()
 
     // Set camera default parameters
     // frame_rate_, exposure_time_, res_x_, res_y_, num_images_
-    set_default_all_parameters(10000, .000005, 640, 480, 3000);
+    set_default_all_parameters(10000, 5, 640, 480, 3000);
 
-    tcplayer_.send_command("rec 1\r");
+
 
     // Start the data stream
     start_data_stream();
+
+
+    tcplayer_.send_command("rec 1\r");
+
+
 
 }
 
@@ -77,19 +82,21 @@ int CameraModel::get_live_cine_number()
 
     for(int i = 0; i < string_vec.size(); i++)
     {
-        if(string_vec[i].find("ACT") != std::string::npos)
+        if(string_vec[i].find("ACT") != std::string::npos) // 'ACT' flag found!
         {
             return i;
         }
     }
 
-    return -1;
+    return -1; // Couldn't get live cine...
 }
 
 void CameraModel::record()
 {
     // Needed for int to string conversions
     std::stringstream ss;
+
+    std::cout << "Start record" << std::endl;
 
     // Determine which cine is active
     int current_cine = get_live_cine_number();
@@ -119,21 +126,29 @@ void CameraModel::record()
 
     int start_index = get_cine_firstfr(current_cine);
     int stop_index = get_cine_lastfr(current_cine);
+    std::cout << "stop_index " << stop_index << std::endl;
+    std::cout << "start_index " << start_index << std::endl;
     int total_frames = stop_index - start_index+1;
 
 
+    std::cout << total_frames << std::endl;
+    std::cout << res_x_ << std::endl;
+    std::cout << res_y_ << std::endl;
+    std::cout << recording_buffer_size_ << std::endl;
+
     if((total_frames*res_x_*res_y_) >= recording_buffer_size_){
+        std::cout << "?" << std::endl;
         // Num frames exceeds total buffer size; save in chunks instead.
 
 
         int j, k; // Left and right indices for saving.
         int interval; // This is the total number of frames to fetch per request.
 
-
+        int total_saves = (total_frames*res_x_*res_y_)/(recording_buffer_size_) + 1;
 
         // Loop over chunks of data.
-        for(int i = 0; i < (total_frames*res_x_*res_y_)/(recording_buffer_size_) + 1; i++){
-            std::cout << "i = " << i << std::endl;
+        for(int i = 0; i < total_saves; i++){
+            std::cout << "Saving frame " << i + 1 << " out of " << total_saves << "." << std::endl;
             j = start_index + i*recording_buffer_size_/(res_x_*res_y_);  // Left point
             k = j + recording_buffer_size_/(res_x_*res_y_) - 1; // Right
 
@@ -163,7 +178,10 @@ void CameraModel::record()
 
 
     else{
+        std::cout << "Shouldn't see this..." << std::endl;
+        std::cout << "Saving " << total_frames << " images. Start: " << start_index << "." << std::endl;
         // Number of frames fits inside the buffer; call 'tcplayer_.send_data_request' just once.
+
         tcplayer_.send_data_request("img {cine:" + current_cine_str + ", start:"+std::to_string(start_index)+", cnt:"+std::to_string(total_frames)+"}\r",\
                                     recorded_image_buffer_, (total_frames-3)*res_x_*res_y_); // - 3 is to prevent infinite loop.
 
@@ -224,7 +242,7 @@ void CameraModel::get_cine_info()
         std::cout << tcplayer_.send_command(cine_string) << std::endl;
     }
 
-    //std::cout << tcplayer_.send_command("get info.*\r") << std::endl;
+    std::cout << tcplayer_.send_command("get info.*\r") << std::endl;
 
     //tcplayer_.send_command("get info.cinemem\r");
 
@@ -290,7 +308,7 @@ void CameraModel::set_default_all_parameters(int frame_rate, int exposure_time, 
 void CameraModel::set_default_all_parameters_camera(){
 
     // Allocate space on the camera cines
-    tcplayer_.send_command("alloc {"+ std::to_string(image_size_*num_images_/1000000.) + "}\r");
+    std::cout << "Allocating space " << tcplayer_.send_command("alloc {"+ std::to_string(image_size_*num_images_/1000000.) + "}\r") << std::endl;
 
 
     // Set defaults for camera
@@ -301,6 +319,8 @@ void CameraModel::set_default_all_parameters_camera(){
     cmd += "exp:" + std::to_string(exposure_time_*1000)+"}\r";      // *1000: Convert to nanoseconds
 
     tcplayer_.send_command(cmd);
+
+    tcplayer_.send_command("rec 1\r");
 
     return;
 }

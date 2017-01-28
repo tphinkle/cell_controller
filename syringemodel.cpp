@@ -92,6 +92,7 @@ void SyringeModel::syringe_run()
 
 void SyringeModel::syringe_get_rate()
 {
+    std::cout << "Setting rate in syringe 2. " << std::endl;
     std::string result = serial_connection_.write_data_request("RAT\r");
     set_rate(std::stod(result));
 
@@ -186,6 +187,7 @@ void SyringeModel::set_direction(Direction direction)
 
 void SyringeModel::set_rate(double rate)
 {
+    std::cout << "Setting rate in syringe." << std::endl;
     rate_ = rate;
     emit(state_update_rate(rate));
 

@@ -220,7 +220,7 @@ void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_b
 {
     if(initialized_ == false){
         std::cout << "TCP layer did not initialize properly; cannot run!" << std::endl;
-        return 0x00;
+        return;
     }
 
 
@@ -271,7 +271,7 @@ void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_b
 {
     if(initialized_ == false){
         std::cout << "TCP layer did not initialize properly; cannot run!" << std::endl;
-        return 0x00;
+        return;
     }
 
 

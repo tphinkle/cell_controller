@@ -21,6 +21,10 @@ SyringeController::SyringeController(MainModel* main_model, MainView* main_view)
 
 
     syringe_thread_->start();
+
+    setup_connections();
+
+    receive_request_get_rate();
 }
 
 void SyringeController::setup_connections()
@@ -152,6 +156,7 @@ void SyringeController::receive_request_set_reverse()
 
 void SyringeController::receive_request_get_rate()
 {
+    std::cout << "Getting rate." << std::endl;
     emit command_syringe_get_rate();
     return;
 }
@@ -222,6 +227,7 @@ void SyringeController::receive_state_update_model_motion_stopped()
 
 void SyringeController::receive_state_update_model_rate(double rate)
 {    
+    std::cout << "Setting rate." << std::endl;
     std::ostringstream strs;
     strs << rate;
     std::string str = strs.str();

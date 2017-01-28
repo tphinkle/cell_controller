@@ -12,11 +12,12 @@ MainController::MainController(MainModel* main_model, MainView* main_view) :
 
 
 
-    syringe_controller_.setup_connections();
+    // Obsolete: Moved controller_.setup_connections() to the controller constructor.
+    //syringe_controller_.setup_connections();
 
-    rp_controller_.setup_connections();
+    //rp_controller_.setup_connections();
 
-    camera_controller_.setup_connections();
+    //camera_controller_.setup_connections();
 
     setup_cross_connections();
 

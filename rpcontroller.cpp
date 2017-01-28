@@ -25,6 +25,8 @@ RPController::RPController(MainModel* main_model, MainView* main_view)
     rp_thread_controller_ = new RPThreadController();
     main_model_->rp_model().thread_controller_ = rp_thread_controller_;
 
+    setup_connections();
+
 }
 
 RPController::~RPController()
