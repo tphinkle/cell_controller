@@ -83,13 +83,27 @@ void CameraController::setup_connections()
     return;
 }
 
+
+
 void CameraController::receive_request_view_record()
 {
     //camera_display_timer_->stop();
+    //QTimer* record_timer = new QTimer();
+    //record_timer->setInterval(1000.*main_model_->camera_model().num_images()/main_model_->camera_model().frame_rate());
+    //QObject::connect(record_timer, SIGNAL(timeout()), this, SIGNAL(command_model_record()));
+    //QObject::connect(record_timer, SIGNAL(timeout()), record_timer, SLOT(stop()));
+    //QObject::connect(record_timer, SIGNAL(timeout()), record_timer, SLOT(deleteLater()));
+    //record_timer->start();
+
+    //QObject::connect(camera_display_timer_, SIGNAL(timeout()), this, SLOT(receive_request_get_live_image()));
+    //QObject::connect(camera_display_timer_, SIGNAL(timeout()), camera_display_timer_, SLOT(stop()));
+
+
     emit command_model_record();
 
     return;
 }
+
 
 void CameraController::receive_request_view_get_cine_info()
 {

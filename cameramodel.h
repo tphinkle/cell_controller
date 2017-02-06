@@ -23,6 +23,9 @@ public:
     std::vector<uchar> live_image_buffer_;
     std::vector<uchar> recorded_image_buffer_;
 
+    int frame_rate();
+    int num_images();
+
 
 
 

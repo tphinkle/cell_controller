@@ -167,7 +167,6 @@ void CameraModel::record()
 
 
             write_head = &recorded_image_buffer_[0];
-
             output_file.write((char*)write_head, (interval-3)*res_x_*res_y_);
 
         }
@@ -189,6 +188,8 @@ void CameraModel::record()
     }
 
     output_file.close(); // Close file
+
+    std::cout << "Save finished!" << std::endl;
 
     return;
 
@@ -325,6 +326,13 @@ void CameraModel::set_default_all_parameters_camera(){
     return;
 }
 
+int CameraModel::frame_rate(){
+    return frame_rate_;
+}
+
+int CameraModel::num_images(){
+    return num_images_;
+}
 
 
 std::vector<std::string> CameraModel::split_string(std::string str, std::string split_str)

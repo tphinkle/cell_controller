@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept>
+#include <regex>
 
 
 SyringeModel::SyringeModel()
@@ -15,7 +17,7 @@ SyringeModel::SyringeModel()
 
 void SyringeModel::syringe_set_local()
 {
-    serial_connection_.write("KEY");
+    serial_connection_.write("KEY\r");
 
     return;
 }
@@ -92,9 +94,12 @@ void SyringeModel::syringe_run()
 
 void SyringeModel::syringe_get_rate()
 {
-    std::cout << "Setting rate in syringe 2. " << std::endl;
+
     std::string result = serial_connection_.write_data_request("RAT\r");
-    set_rate(std::stod(result));
+
+    double result_double = std::stod(result);
+
+    set_rate(result_double);
 
     return;
 }
@@ -189,7 +194,9 @@ void SyringeModel::set_rate(double rate)
 {
     std::cout << "Setting rate in syringe." << std::endl;
     rate_ = rate;
+    std::cout << "RATE = " << rate << std::endl;
     emit(state_update_rate(rate));
+    std::cout << "c" << std::endl;
 
     return;
 }
