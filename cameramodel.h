@@ -74,6 +74,7 @@ private:
     int camera_buffer_size_;            // Max memory capable of being stored by camera in MB
     int recording_buffer_size_;       // Max memory on computer to reserve for buffer in MB
 
+    enum PHANTOM_SERIES {V7, V16};
 
 
 

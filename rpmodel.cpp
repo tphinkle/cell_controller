@@ -214,6 +214,10 @@ void RPModel::sample_DAQ()
 void RPModel::update_buffer()
 {
 
+    //static int total_points = 0;
+    //static std::chrono::milliseconds start_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+
+
     // Shift sample reference to buffer
     for(unsigned int i = 0; i < sample_buffer_length_; i++)
     {
@@ -227,6 +231,19 @@ void RPModel::update_buffer()
 
     // Increment the buffer head
     data_buffer_head_ = (data_buffer_head_ + sample_buffer_length_)%data_buffer_length_;
+
+
+    //total_points += sample_buffer_length_;
+    //std::chrono::milliseconds current_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+
+    //std::cout << "Total points: " << total_points << std::endl;
+    //std::cout << "delta time: " << current_time.count() - start_time.count() << std::endl;
+
+
+
+
+
+
     return;
 }
 

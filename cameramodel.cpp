@@ -21,10 +21,17 @@ CameraModel::CameraModel()
     // Constants
     command_port_ = 7115;
     data_port_ = 15234;
-    camera_buffer_size_ = 2048000000; // B (camera) total, divided between all cines
+
+    // camera_buffer_size_ = 2048000000; // B (camera) total, divided between all cines
+    camera_buffer_size_ = 40000000000; // B (camera) total, divided between all cines
+
     recording_buffer_size_ = 500000000; // B (computer)
-    camera_ip_ = "100.100.37.9";
+    // camera_ip_ = "100.100.37.9";    // V7.1
+    camera_ip_ = "100.100.125.66";     // V2511
     server_ip_ = "100.100.100.1";
+
+    //PHANTOM_SERIES series = PHANTOM_SERIES::V7;   // High-speed
+    PHANTOM_SERIES series = PHANTOM_SERIES::V16;    // Ultra high-speed
 
 
     // Initialize
@@ -32,7 +39,9 @@ CameraModel::CameraModel()
 
     // Set camera default parameters
     // frame_rate_, exposure_time_, res_x_, res_y_, num_images_
-    set_default_all_parameters(10000, 5, 640, 480, 3000);
+
+    //set_default_all_parameters(10000, 35, 640, 480, 5000);    // For v7
+    set_default_all_parameters(40000, 10, 800, 600, 5000);    // V16
 
 
 
@@ -128,7 +137,7 @@ void CameraModel::record()
     int stop_index = get_cine_lastfr(current_cine);
     std::cout << "stop_index " << stop_index << std::endl;
     std::cout << "start_index " << start_index << std::endl;
-    int total_frames = stop_index - start_index+1;
+    int total_frames = stop_index - start_index + 1;
 
 
     std::cout << total_frames << std::endl;
@@ -137,7 +146,6 @@ void CameraModel::record()
     std::cout << recording_buffer_size_ << std::endl;
 
     if((total_frames*res_x_*res_y_) >= recording_buffer_size_){
-        std::cout << "?" << std::endl;
         // Num frames exceeds total buffer size; save in chunks instead.
 
 
@@ -177,7 +185,6 @@ void CameraModel::record()
 
 
     else{
-        std::cout << "Shouldn't see this..." << std::endl;
         std::cout << "Saving " << total_frames << " images. Start: " << start_index << "." << std::endl;
         // Number of frames fits inside the buffer; call 'tcplayer_.send_data_request' just once.
 
@@ -190,6 +197,8 @@ void CameraModel::record()
     output_file.close(); // Close file
 
     std::cout << "Save finished!" << std::endl;
+
+    tcplayer_.send_command("rec 1\r");
 
     return;
 
@@ -236,16 +245,20 @@ int CameraModel::get_cine_frcount(int cine_num)
 
 void CameraModel::get_cine_info()
 {
-    std::cout << tcplayer_.send_command("get info.maxcines\r") << std::endl;
+    // std::cout << tcplayer_.send_command("get info.maxcines\r") << std::endl;
+    std::cout << tcplayer_.send_command("get c1.frspace\r") << std::endl;
+    std::cout << tcplayer_.send_command("get c1.res\r") << std::endl;
+    std::cout << tcplayer_.send_command("get c1.ptframes\r") << std::endl;
     for(int i = 0; i < 5; i++)
     {
         std::string cine_string = "get c" + std::to_string(i) + ".state\r";
         std::cout << tcplayer_.send_command(cine_string) << std::endl;
     }
 
-    std::cout << tcplayer_.send_command("get info.*\r") << std::endl;
+    //std::cout << tcplayer_.send_command("get info.*\r") << std::endl;
 
-    //tcplayer_.send_command("get info.cinemem\r");
+    //std::cout << tcplayer_.send_command("get info.cinemem\r") << std::endl;
+
 
     return;
 }
@@ -309,7 +322,7 @@ void CameraModel::set_default_all_parameters(int frame_rate, int exposure_time, 
 void CameraModel::set_default_all_parameters_camera(){
 
     // Allocate space on the camera cines
-    std::cout << "Allocating space " << tcplayer_.send_command("alloc {"+ std::to_string(image_size_*num_images_/1000000.) + "}\r") << std::endl;
+    //std::cout << "Allocating space " << tcplayer_.send_command("alloc {"+ std::to_string(image_size_*num_images_/1000000.) + "}\r") << std::endl;
 
 
     // Set defaults for camera

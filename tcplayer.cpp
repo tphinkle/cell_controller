@@ -216,6 +216,7 @@ std::string TCPLayer::send_command(std::string command)
 
 }
 
+
 void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_buffer)
 {
     if(initialized_ == false){

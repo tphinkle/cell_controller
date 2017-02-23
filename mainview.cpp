@@ -155,7 +155,7 @@ void MainView::setup_camera_view()
 
     camera_exposure_time_field_ = new QLineEdit("", this);
     camera_exposure_time_field_->setFont(*minor_label_font_);
-    camera_exposure_time_field_->setText("2");
+    camera_exposure_time_field_->setText("35");
 
     // Buttons
     camera_start_button_ = new QPushButton("Start camera", this);
