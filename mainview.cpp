@@ -151,11 +151,11 @@ void MainView::setup_camera_view()
     // Fields
     camera_frame_rate_field_ = new QLineEdit("", this);
     camera_frame_rate_field_->setFont(*minor_label_font_);
-    camera_frame_rate_field_->setText("10000");
+    camera_frame_rate_field_->setText("50000");
 
     camera_exposure_time_field_ = new QLineEdit("", this);
     camera_exposure_time_field_->setFont(*minor_label_font_);
-    camera_exposure_time_field_->setText("35");
+    camera_exposure_time_field_->setText("5");
 
     // Buttons
     camera_start_button_ = new QPushButton("Start camera", this);

@@ -24,7 +24,7 @@ SyringeController::SyringeController(MainModel* main_model, MainView* main_view)
 
     setup_connections();
 
-    receive_request_get_rate();
+    //receive_request_get_rate();
 }
 
 void SyringeController::setup_connections()

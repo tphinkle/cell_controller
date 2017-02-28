@@ -276,17 +276,51 @@ void TCPLayer::send_data_request(std::string request, std::vector<uchar>& data_b
     }
 
 
-    send_command(request);
+    std::cout << send_command(request) << std::endl;
 
     int data_buffer_iter = 0;
     int bytes_returned = 0;
 
     set_data_socket_blocking(false);
+    /*
 
+
+    if(initialized_ == false){
+        std::cout << "TCP layer did not initialize properly; cannot run!" << std::endl;
+        return;
+    }
+
+
+
+
+
+
+    static bool listen_set = false;
+    if(listen_set == false)
+    {
+        data_socket_ = INVALID_SOCKET;
+
+        data_socket_ = accept(listen_socket_, NULL, NULL);
+
+        listen_set = true;
+    }
+*/
+
+
+    int iter = 0;
 
     while(data_buffer_iter < size)
     {
         bytes_returned = recv(data_socket_, (char*)&(data_buffer[data_buffer_iter]), size-data_buffer_iter, 0);
+
+        iter++;
+
+        /*if(iter%10000 == 0){
+            std::cout << "Current iter: " << iter << std::endl;
+            std::cout << "Data buffer iter: " << data_buffer_iter << std::endl;
+            std::cout << "Expected: " << size << std::endl;
+        }*/
+
 
         if(bytes_returned > 0){
             data_buffer_iter += bytes_returned;
