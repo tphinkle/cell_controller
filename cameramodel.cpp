@@ -40,10 +40,11 @@ CameraModel::CameraModel()
     // Set camera default parameters
     // frame_rate_, exposure_time_, res_x_, res_y_, num_images_
     std::cout << "Setting default parameters to camera." << std::endl;
-    set_default_all_parameters(15000, 20, 512, 288, 13500);    // For v7
+    // set_default_all_parameters(15000, 20, 512, 288, 13500);    // For v7
     //set_default_all_parameters(5000, 20, 384, 288, 50);    // V16
 
-    set_default_all_parameters(50000, 5, 512, 288, 50);    // V16
+    //set_default_all_parameters(100000, 2, 512, 288, 50);    // V16
+    set_default_all_parameters(250000, 1, 384, 112, 250);    // V16 100k fps
 
 
     std::cout << "Starting data stream." << std::endl;
@@ -132,7 +133,7 @@ void CameraModel::record()
     // Save counter for file names; increments by 1 every save
     static int save_count = 0;
     // Initialize save file
-    std::ofstream output_file("D:\\test_camera_"+std::to_string(save_count), std::ios::binary);
+    std::ofstream output_file("E:\\test_camera_"+std::to_string(save_count), std::ios::binary);
     save_count++;
 
 
@@ -141,13 +142,14 @@ void CameraModel::record()
 
     long start_index = get_cine_firstfr(current_cine);
 
-    start_index = -50000;    // -50000 is hack for V16 camera; remove this line for V7
-
+    //start_index = -50000;    // -50000 is hack for V16 camera; remove this line for V7
+    start_index = -500000;    // 100000 FPS change -50000 is hack for V16 camera; remove this line for V7
+    //start_index = -5000;
     int stop_index = get_cine_lastfr(current_cine);
     std::cout << "stop_index " << stop_index << std::endl;
     std::cout << "start_index " << start_index << std::endl;
-    int total_frames = stop_index - start_index + 1;
-    unsigned long total_size = total_frames*res_x_*res_y_;
+    long total_frames = stop_index - start_index + 1;
+    long total_size = total_frames*res_x_*res_y_;
 
 
 
@@ -157,7 +159,8 @@ void CameraModel::record()
     std::cout << "Recording buffer size: " << recording_buffer_size_ << std::endl;
     std::cout << "Total size: " << total_size << std::endl;
 
-    if((total_size) >= (unsigned long)(recording_buffer_size_)){
+    //if((total_size) >= (long)(recording_buffer_size_))
+    if(1 > 0){
         // Num frames exceeds total buffer size; save in chunks.
 
         int j, k; // Left and right indices for saving.
@@ -213,7 +216,7 @@ void CameraModel::record()
         // Number of frames fits inside the buffer; call 'tcplayer_.send_data_request' just once.
 
         std::cout << "Saving " << total_frames << " images. Start: " << start_index << "." << std::endl;
-
+        return;
         tcplayer_.send_data_request("img {cine:" + current_cine_str + ", start:"+std::to_string(start_index)+", cnt:"+std::to_string(total_frames)+"}\r",\
                                     recorded_image_buffer_, (total_frames-3)*res_x_*res_y_); // - 3 is to prevent infinite loop.
 
@@ -284,6 +287,9 @@ void CameraModel::get_cine_info()
     std::cout << tcplayer_.send_command("get c1.ptframes\r") << std::endl;
     std::cout << tcplayer_.send_command("get c1.rate\r") << std::endl;
     std::cout << tcplayer_.send_command("get c1.exp\r") << std::endl;
+    std::cout << "xinc and yinc" << std::endl;
+    std::cout << tcplayer_.send_command("get info.xinc\r") << std::endl;
+    std::cout << tcplayer_.send_command("get info.yinc\r") << std::endl;
     for(int i = 0; i < 2; i++)
     {
         std::string cine_string = "get c" + std::to_string(i) + ".state\r";
@@ -390,8 +396,12 @@ void CameraModel::set_default_all_parameters_camera(){
     cmd += "rate:" + std::to_string(frame_rate_)+", ";
     cmd += "ptframes:0, ";
     cmd += "frspace:" + std::to_string(880*num_images_) +", ";    // V16; reserve memory; 2416 is the image size (in kernels) per image for 640x480; 880 for 384x288;
-                                                                    // This line may not be needed; it was commented out for V16 before and worked just fine.
+
+    //std::cout << "SETTING EXPOSURE MANUALLY TO 500 NS!" << std::to_string(exposure_time_*1000) << std::endl;
+
     cmd += "exp:" + std::to_string(exposure_time_*1000)+"}\r";      // *1000: Convert to nanoseconds
+    //cmd += "exp:" + std::to_string(1000)+"}\r";      // *1000: Convert to nanoseconds
+
 
     std::cout << "setting status:" << tcplayer_.send_command(cmd) << std::endl;
 

@@ -134,6 +134,7 @@ void MainView::setup_camera_view()
     camera_resolution_combo_box_ = new QComboBox(this);
     camera_resolution_combo_box_->addItem("640x480");
     camera_resolution_combo_box_->addItem("320x240");
+    camera_resolution_combo_box_->addItem("384x112");
 
     // Label
     camera_control_label_ = new QLabel("Camera Controls", this);

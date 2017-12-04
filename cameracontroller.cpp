@@ -144,6 +144,11 @@ void CameraController::receive_request_set_parameters()
 
 void CameraController::receive_state_update_model_live_image(int res_x, int res_y)
 {
+
+
+
+
+
     QImage img(main_model_->camera_model().live_image_pointer_, res_x, res_y, QImage::Format_Indexed8);
     main_view_->camera_scene_->clear();
     QPixmap pixmap = QPixmap::fromImage(img);
@@ -152,6 +157,14 @@ void CameraController::receive_state_update_model_live_image(int res_x, int res_
 
     camera_display_timer_->start();
 
+
+    /* AUTO FOCUS EXPERIMENT */
+    //const uchar* first_pixel_pointer = img.constBits();
+
+    //std::cout << *first_pixel_pointer << std::endl;
+
+
+    /* END EXPERIMENT */
 
     return;
 }

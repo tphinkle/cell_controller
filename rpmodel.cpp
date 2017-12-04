@@ -145,7 +145,7 @@ void RPModel::save_buffer()
         std::stringstream save_index_ss;
         save_index_ss << save_index;
         std::string save_index_string = save_index_ss.str();
-        std::ofstream output_file("D:\\test_rp_" + save_index_string, std::ios::binary);
+        std::ofstream output_file("E:\\test_rp_" + save_index_string, std::ios::binary);
         save_index++;
         for(int i = 0; i < data_buffer_.size(); i++)
         {
